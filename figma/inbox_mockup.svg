@@ -1,0 +1,209 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Global Canvas Background -->
+  <rect width="1440" height="900" fill="#0A2218" />
+
+  <!-- SIDEBAR CONTAINER -->
+  <g id="Sidebar" name="Sidebar">
+    <rect width="240" height="900" fill="#061810" stroke="#1A3828" stroke-width="1" />
+    <g id="Sidebar-Logo" name="Logo">
+      <text x="24" y="40" font-family="Barlow Condensed, Inter, sans-serif" font-size="22" font-weight="800" fill="#EFF6F2">Wa<tspan fill="#1FE88A">Bot</tspan>.ai</text>
+    </g>
+    <g id="Sidebar-Nav-Items" name="Navigation Items">
+      <text x="24" y="90" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#7FA897" letter-spacing="1">PLATFORM</text>
+      <g id="Nav-Dashboard" name="Dashboard" cursor="pointer">
+        <text x="60" y="136" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Dashboard</text>
+      </g>
+      <g id="Nav-Inbox" name="Inbox (Active)" cursor="pointer">
+        <rect x="16" y="152" width="208" height="40" rx="8" fill="#1FE88A" fill-opacity="0.08" />
+        <text x="60" y="176" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Inbox</text>
+      </g>
+      <g id="Nav-AI-Builder" name="AI Builder" cursor="pointer">
+        <text x="60" y="216" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">AI Builder</text>
+      </g>
+      <g id="Nav-Analytics" name="Analytics" cursor="pointer">
+        <text x="60" y="256" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Analytics</text>
+      </g>
+      <g id="Nav-CRM" name="CRM" cursor="pointer">
+        <text x="60" y="296" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">CRM</text>
+      </g>
+    </g>
+    <g id="Sidebar-Footer" name="User Profile">
+      <rect x="0" y="820" width="240" height="80" fill="#061810" stroke="#1A3828" />
+      <circle cx="40" cy="860" r="16" fill="#1FE88A" fill-opacity="0.12" />
+      <text x="35" y="865" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#1FE88A">Y</text>
+      <text x="68" y="855" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Yasir Sheikh</text>
+      <text x="68" y="870" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Founder · Growth</text>
+    </g>
+  </g>
+
+  <!-- TOPBAR CONTAINER -->
+  <g id="Topbar" name="Topbar">
+    <rect x="240" y="0" width="1200" height="64" fill="#0A2218" stroke="#1A3828" />
+    <text x="264" y="36" font-family="Barlow Condensed, Inter, sans-serif" font-size="20" font-weight="800" fill="#EFF6F2">Inbox</text>
+    <text x="264" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">AI-powered customer conversations</text>
+  </g>
+
+  <!-- INBOX MAIN CONTAINER -->
+  <g id="Inbox-Workspace" name="Inbox Viewport">
+    
+    <!-- LEFT CONVERSATIONS LIST (width=280) -->
+    <g id="Conversation-List" name="Conversations List">
+      <rect x="240" y="64" width="280" height="836" fill="#0A2218" stroke="#1A3828" />
+      
+      <!-- Search Box -->
+      <g id="List-Search" name="Search Box">
+        <rect x="256" y="80" width="248" height="36" rx="8" fill="#061810" stroke="#1A3828" />
+        <text x="272" y="102" font-family="Inter, sans-serif" font-size="13" fill="#7FA897">Search conversations...</text>
+      </g>
+      
+      <!-- Filter Tabs -->
+      <g id="List-Tabs" name="Filters">
+        <rect x="256" y="128" width="60" height="24" rx="12" fill="#1FE88A" />
+        <text x="286" y="144" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#061810" text-anchor="middle">All</text>
+        
+        <rect x="324" y="128" width="68" height="24" rx="12" fill="none" stroke="#1A3828" />
+        <text x="358" y="144" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="middle">Unread</text>
+        
+        <rect x="400" y="128" width="68" height="24" rx="12" fill="none" stroke="#1A3828" />
+        <text x="434" y="144" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="middle">Starred</text>
+      </g>
+
+      <!-- Chat List Items -->
+      <g id="List-Items">
+        <!-- Item 1 (Selected/Active) -->
+        <g id="List-Item-1" name="Item Priya (Active)" cursor="pointer">
+          <rect x="240" y="168" width="280" height="80" fill="#1FE88A" fill-opacity="0.06" stroke="#1A3828" stroke-dasharray="0 0 1 0" />
+          <circle cx="280" cy="208" r="18" fill="#1FE88A" fill-opacity="0.1" />
+          <text x="276" y="213" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#1FE88A">P</text>
+          <text x="310" y="200" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Priya Meshram</text>
+          <text x="310" y="218" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Is tomorrow 11 AM...</text>
+          <text x="504" y="200" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">2m</text>
+          <!-- Unread Badge -->
+          <circle cx="496" cy="216" r="8" fill="#1FE88A" />
+          <text x="496" y="219" font-family="Inter, sans-serif" font-size="9" font-weight="800" fill="#061810" text-anchor="middle">2</text>
+        </g>
+
+        <!-- Item 2 -->
+        <g id="List-Item-2" name="Item Rahul" cursor="pointer">
+          <rect x="240" y="248" width="280" height="80" stroke="#1A3828" stroke-dasharray="0 0 1 0" />
+          <circle cx="280" cy="288" r="18" fill="#3B82F6" fill-opacity="0.1" />
+          <text x="276" y="293" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#3B82F6">R</text>
+          <text x="310" y="280" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Rahul Deshmukh</text>
+          <text x="310" y="298" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">What are the batch tim...</text>
+          <text x="504" y="280" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">8m</text>
+        </g>
+
+        <!-- Item 3 -->
+        <g id="List-Item-3" name="Item Sunita" cursor="pointer">
+          <rect x="240" y="328" width="280" height="80" stroke="#1A3828" stroke-dasharray="0 0 1 0" />
+          <circle cx="280" cy="368" r="18" fill="#F59E0B" fill-opacity="0.1" />
+          <text x="276" y="373" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#F59E0B">S</text>
+          <text x="310" y="360" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Sunita Agrawal</text>
+          <text x="310" y="378" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Can I reschedule my...</text>
+          <text x="504" y="360" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">22m</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- CENTER CHAT PANEL (width=680) -->
+    <g id="Chat-Window" name="Active Chat Window">
+      <rect x="520" y="64" width="680" height="836" fill="#0A2218" stroke="#1A3828" />
+
+      <!-- Chat Header -->
+      <g id="Chat-Header" name="Header">
+        <rect x="520" y="64" width="680" height="64" fill="#0A2218" stroke="#1A3828" stroke-dasharray="0 0 1 0" />
+        <circle cx="556" cy="96" r="18" fill="#1FE88A" fill-opacity="0.1" />
+        <text x="552" y="101" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#1FE88A">P</text>
+        <text x="584" y="94" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#EFF6F2">Priya Meshram</text>
+        <text x="584" y="108" font-family="Inter, sans-serif" font-size="11" fill="#1FE88A">● Active now</text>
+
+        <!-- Mode indicators -->
+        <rect x="1040" y="82" width="64" height="24" rx="12" fill="#1FE88A" fill-opacity="0.08" />
+        <text x="1072" y="98" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1FE88A" text-anchor="middle">🤖 AI</text>
+        <rect x="1112" y="80" width="72" height="28" rx="8" fill="none" stroke="#1A3828" />
+        <text x="1148" y="98" font-family="Inter, sans-serif" font-size="12" fill="#7FA897" text-anchor="middle">Takeover</text>
+      </g>
+
+      <!-- Message History Canvas -->
+      <g id="Chat-History" name="History Area">
+        <!-- Message 1 (Assistant bot) -->
+        <g id="Msg-1-Assistant" transform="translate(540, 150)">
+          <!-- Bubble background -->
+          <rect width="450" height="60" rx="14" fill="#0d2e20" stroke="#1A3828" />
+          <text x="16" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1FE88A">🤖 WaBot AI</text>
+          <text x="16" y="38" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">Hi Priya! Welcome to Dr. Sharma's Clinic. How can I help you?</text>
+          <text x="434" y="50" font-family="Inter, sans-serif" font-size="9" fill="#7FA897" text-anchor="end">10:40 AM</text>
+        </g>
+
+        <!-- Message 2 (User) -->
+        <g id="Msg-2-User" transform="translate(730, 230)">
+          <rect width="450" height="46" rx="14" fill="#1FE88A" fill-opacity="0.08" stroke="#1FE88A" stroke-opacity="0.2" />
+          <text x="16" y="24" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">Is tomorrow 11 AM available for consultation?</text>
+          <text x="434" y="36" font-family="Inter, sans-serif" font-size="9" fill="#7FA897" text-anchor="end">10:41 AM</text>
+        </g>
+      </g>
+
+      <!-- AI Suggestion Box -->
+      <g id="Chat-Suggestion-Box" name="AI Suggestion Pane" transform="translate(540, 720)">
+        <rect width="640" height="74" rx="10" fill="#1FE88A" fill-opacity="0.06" stroke="#1FE88A" stroke-opacity="0.2" />
+        <text x="16" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1FE88A">🤖 AI Suggestion</text>
+        <text x="16" y="38" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">Yes, tomorrow at 11:30 AM is open. Would you like to reserve it?</text>
+        <rect x="490" y="16" width="60" height="24" rx="6" fill="#1FE88A" />
+        <text x="520" y="32" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#061810" text-anchor="middle">Use</text>
+        <rect x="560" y="16" width="64" height="24" rx="6" fill="none" stroke="#1A3828" />
+        <text x="592" y="32" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="middle">Dismiss</text>
+      </g>
+
+      <!-- Message Input Block -->
+      <g id="Chat-Input" name="Input Bar">
+        <rect x="520" y="810" width="680" height="90" fill="#0A2218" stroke="#1A3828" stroke-dasharray="1 0" />
+        <rect x="540" y="828" width="550" height="40" rx="10" fill="#061810" stroke="#1A3828" />
+        <text x="556" y="853" font-family="Inter, sans-serif" font-size="13" fill="#7FA897">Reply or let AI handle it...</text>
+        
+        <!-- Send Button -->
+        <rect x="1144" y="828" width="40" height="40" rx="10" fill="#1FE88A" />
+        <!-- Send Icon vector path -->
+        <path d="M1160 848L1168 844L1160 840L1162 844L1160 848Z" fill="#061810" />
+      </g>
+    </g>
+
+    <!-- RIGHT CUSTOMER PROFILE SIDEBAR (width=240) -->
+    <g id="Customer-Profile" name="Customer Info Panel">
+      <rect x="1200" y="64" width="240" height="836" fill="#0A2218" stroke="#1A3828" />
+
+      <!-- Photo and Name -->
+      <g id="Profile-Header" name="Header Section" transform="translate(1200, 64)">
+        <circle cx="120" cy="56" r="28" fill="#1FE88A" fill-opacity="0.1" />
+        <text x="113" y="64" font-family="Barlow Condensed, sans-serif" font-size="22" font-weight="800" fill="#1FE88A">P</text>
+        <text x="120" y="104" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#EFF6F2" text-anchor="middle">Priya Meshram</text>
+        <text x="120" y="120" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="middle">+91 98765 43210</text>
+      </g>
+
+      <!-- Divider line -->
+      <line x1="1216" y1="210" x2="1424" y2="210" stroke="#1A3828" />
+
+      <!-- Details Metadata List -->
+      <g id="Profile-Metadata" name="Metadata Details" transform="translate(1216, 226)" font-family="Inter, sans-serif" font-size="12">
+        <text x="0" y="16" fill="#7FA897">Tag</text>
+        <text x="208" y="16" font-weight="600" fill="#1FE88A" text-anchor="end">Booking</text>
+
+        <text x="0" y="46" fill="#7FA897">First seen</text>
+        <text x="208" y="46" fill="#EFF6F2" text-anchor="end">Today</text>
+
+        <text x="0" y="76" fill="#7FA897">Total queries</text>
+        <text x="208" y="76" fill="#EFF6F2" text-anchor="end">7</text>
+
+        <text x="0" y="106" fill="#7FA897">Bookings</text>
+        <text x="208" y="106" fill="#EFF6F2" text-anchor="end">2</text>
+      </g>
+
+      <!-- Customer Notes Section -->
+      <g id="Profile-Notes" name="Notes Section" transform="translate(1216, 380)">
+        <text x="0" y="12" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#7FA897" letter-spacing="1">NOTES</text>
+        <rect x="0" y="24" width="208" height="80" rx="8" fill="#061810" stroke="#1A3828" />
+        <text x="10" y="42" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Add a note...</text>
+      </g>
+    </g>
+
+  </g>
+</svg>

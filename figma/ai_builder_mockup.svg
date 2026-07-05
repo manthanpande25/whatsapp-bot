@@ -1,0 +1,145 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Global Canvas Background -->
+  <rect width="1440" height="900" fill="#0A2218" />
+
+  <!-- SIDEBAR CONTAINER -->
+  <g id="Sidebar" name="Sidebar">
+    <rect width="240" height="900" fill="#061810" stroke="#1A3828" stroke-width="1" />
+    <g id="Sidebar-Logo" name="Logo">
+      <text x="24" y="40" font-family="Barlow Condensed, Inter, sans-serif" font-size="22" font-weight="800" fill="#EFF6F2">Wa<tspan fill="#1FE88A">Bot</tspan>.ai</text>
+    </g>
+    <g id="Sidebar-Nav-Items" name="Navigation Items">
+      <text x="24" y="90" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#7FA897" letter-spacing="1">PLATFORM</text>
+      <g id="Nav-Dashboard" name="Dashboard" cursor="pointer">
+        <text x="60" y="136" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Dashboard</text>
+      </g>
+      <g id="Nav-Inbox" name="Inbox" cursor="pointer">
+        <text x="60" y="176" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Inbox</text>
+      </g>
+      <g id="Nav-AI-Builder" name="AI Builder (Active)" cursor="pointer">
+        <rect x="16" y="192" width="208" height="40" rx="8" fill="#1FE88A" fill-opacity="0.08" />
+        <text x="60" y="216" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">AI Builder</text>
+      </g>
+      <g id="Nav-Analytics" name="Analytics" cursor="pointer">
+        <text x="60" y="256" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Analytics</text>
+      </g>
+      <g id="Nav-CRM" name="CRM" cursor="pointer">
+        <text x="60" y="296" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">CRM</text>
+      </g>
+    </g>
+    <g id="Sidebar-Footer" name="User Profile">
+      <rect x="0" y="820" width="240" height="80" fill="#061810" stroke="#1A3828" />
+      <circle cx="40" cy="860" r="16" fill="#1FE88A" fill-opacity="0.12" />
+      <text x="35" y="865" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#1FE88A">Y</text>
+      <text x="68" y="855" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Yasir Sheikh</text>
+      <text x="68" y="870" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Founder · Growth</text>
+    </g>
+  </g>
+
+  <!-- TOPBAR CONTAINER -->
+  <g id="Topbar" name="Topbar">
+    <rect x="240" y="0" width="1200" height="64" fill="#0A2218" stroke="#1A3828" />
+    <text x="264" y="36" font-family="Barlow Condensed, Inter, sans-serif" font-size="20" font-weight="800" fill="#EFF6F2">AI Builder</text>
+    <text x="264" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Train and test your conversational AI agent</text>
+  </g>
+
+  <!-- AI BUILDER WORKSPACE -->
+  <g id="Builder-Workspace" name="Builder Viewport">
+    
+    <!-- LEFT CONFIGURATION PANEL (width=540) -->
+    <g id="Settings-Card" name="Agent Settings">
+      <rect x="264" y="88" width="550" height="760" rx="16" fill="#0d2e20" stroke="#1A3828" />
+      <text x="288" y="124" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#EFF6F2">Agent Configuration</text>
+
+      <g id="Form-Inputs" transform="translate(288, 140)" font-family="Inter, sans-serif">
+        <!-- Input 1: Agent Name -->
+        <g id="Input-Agent-Name" transform="translate(0, 0)">
+          <text x="0" y="16" font-size="12" font-weight="600" fill="#7FA897">Agent Name</text>
+          <rect x="0" y="24" width="502" height="38" rx="8" fill="#061810" stroke="#1A3828" />
+          <text x="14" y="48" font-size="13" fill="#EFF6F2">WaBot Assistant</text>
+        </g>
+
+        <!-- Input 2: Welcome Msg -->
+        <g id="Input-Welcome-Msg" transform="translate(0, 80)">
+          <text x="0" y="16" font-size="12" font-weight="600" fill="#7FA897">Welcome Message</text>
+          <rect x="0" y="24" width="502" height="38" rx="8" fill="#061810" stroke="#1A3828" />
+          <text x="14" y="48" font-size="13" fill="#EFF6F2">Hello! Welcome to Dr. Sharma's clinic. How can I help you today?</text>
+        </g>
+
+        <!-- Textarea 3: System Instructions -->
+        <g id="Input-Instructions" transform="translate(0, 160)">
+          <text x="0" y="16" font-size="12" font-weight="600" fill="#7FA897">System Instructions</text>
+          <rect x="0" y="24" width="502" height="120" rx="8" fill="#061810" stroke="#1A3828" />
+          <text x="14" y="46" font-size="13" fill="#EFF6F2" width="470">You are an AI receptionist for Dr. Sharma's clinic. Your goal is to guide</text>
+          <text x="14" y="66" font-size="13" fill="#EFF6F2">the user to book a consultation slot, answer clinic timings, fees, and</text>
+          <text x="14" y="86" font-size="13" fill="#EFF6F2">location details based on the FAQs. Keep responses brief.</text>
+        </g>
+
+        <!-- Toggle Switch 1 -->
+        <g id="Toggle-Booking" transform="translate(0, 310)">
+          <text x="0" y="16" font-size="13" font-weight="600" fill="#EFF6F2">Enable Auto-Booking integration</text>
+          <text x="0" y="32" font-size="11" fill="#7FA897">Allow bot to dynamically reserve slots in calendar</text>
+          <!-- Toggle pill -->
+          <rect x="452" y="4" width="50" height="24" rx="12" fill="#1FE88A" />
+          <circle cx="488" cy="16" r="10" fill="#061810" />
+        </g>
+
+        <!-- Toggle Switch 2 -->
+        <g id="Toggle-Takeover" transform="translate(0, 370)">
+          <text x="0" y="16" font-size="13" font-weight="600" fill="#EFF6F2">Human Takeover Alert notification</text>
+          <text x="0" y="32" font-size="11" fill="#7FA897">Ping agent dashboard immediately when customer asks for human help</text>
+          <!-- Toggle pill (Off) -->
+          <rect x="452" y="4" width="50" height="24" rx="12" fill="#1A3828" />
+          <circle cx="464" cy="16" r="10" fill="#EFF6F2" />
+        </g>
+      </g>
+
+      <!-- Save Button -->
+      <g id="Save-Btn" name="Save settings" cursor="pointer" transform="translate(288, 770)">
+        <rect width="180" height="40" rx="8" fill="#1FE88A" />
+        <text x="90" y="24" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#061810" text-anchor="middle">Save Changes</text>
+      </g>
+    </g>
+
+    <!-- RIGHT SIMULATOR PANEL (width=540) -->
+    <g id="Simulator-Card" name="Agent Sandbox Simulator">
+      <rect x="844" y="88" width="550" height="760" rx="16" fill="#0d2e20" stroke="#1A3828" />
+      <text x="868" y="124" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#EFF6F2">Agent Simulator (Sandbox)</text>
+      <text x="868" y="142" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Test changes in real time before publishing</text>
+
+      <!-- Simulator Chat Area Frame -->
+      <g id="Sim-Chat-Area" transform="translate(868, 172)">
+        <rect width="502" height="500" rx="12" fill="#061810" stroke="#1A3828" />
+        
+        <!-- Welcome prompt bubble -->
+        <g id="Sim-Msg-1" transform="translate(16, 24)">
+          <rect width="400" height="50" rx="12" fill="#0d2e20" stroke="#1A3828" />
+          <text x="14" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1FE88A">🤖 Bot</text>
+          <text x="14" y="36" font-family="Inter, sans-serif" font-size="12" fill="#EFF6F2">Hello! Welcome to Dr. Sharma's clinic. How can I help you today?</text>
+        </g>
+
+        <!-- User testing bubble -->
+        <g id="Sim-Msg-2" transform="translate(86, 90)">
+          <rect width="400" height="34" rx="12" fill="#1FE88A" fill-opacity="0.08" stroke="#1FE88A" stroke-opacity="0.2" />
+          <text x="14" y="21" font-family="Inter, sans-serif" font-size="12" fill="#EFF6F2">What are the clinic timings?</text>
+        </g>
+
+        <!-- Response bubble -->
+        <g id="Sim-Msg-3" transform="translate(16, 140)">
+          <rect width="400" height="50" rx="12" fill="#0d2e20" stroke="#1A3828" />
+          <text x="14" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1FE88A">🤖 Bot</text>
+          <text x="14" y="36" font-family="Inter, sans-serif" font-size="12" fill="#EFF6F2">We are open Monday to Saturday, 9:00 AM to 7:00 PM. Sundays closed.</text>
+        </g>
+      </g>
+
+      <!-- Input send block -->
+      <g id="Sim-Input" transform="translate(868, 686)">
+        <rect width="440" height="38" rx="8" fill="#061810" stroke="#1A3828" />
+        <text x="14" y="23" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Send simulator message...</text>
+        <rect x="450" width="52" height="38" rx="8" fill="#1FE88A" />
+        <path d="M472 20L478 17L472 14L473 17L472 20Z" fill="#061810" />
+      </g>
+    </g>
+
+  </g>
+</svg>

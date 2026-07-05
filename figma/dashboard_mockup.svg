@@ -1,0 +1,309 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Global Canvas Background -->
+  <rect width="1440" height="900" fill="#0A2218" />
+
+  <!-- SIDEBAR CONTAINER -->
+  <g id="Sidebar" name="Sidebar">
+    <!-- Sidebar Background -->
+    <rect width="240" height="900" fill="#061810" stroke="#1A3828" stroke-width="1" />
+    
+    <!-- Logo Section -->
+    <g id="Sidebar-Logo" name="Logo">
+      <text x="24" y="40" font-family="Barlow Condensed, Inter, sans-serif" font-size="22" font-weight="800" fill="#EFF6F2">Wa<tspan fill="#1FE88A">Bot</tspan>.ai</text>
+    </g>
+
+    <!-- Navigation Section -->
+    <g id="Sidebar-Nav-Items" name="Navigation Items">
+      <!-- Section Title: Platform -->
+      <text x="24" y="90" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#7FA897" letter-spacing="1">PLATFORM</text>
+
+      <!-- Active MenuItem: Dashboard -->
+      <g id="Nav-Dashboard" name="Dashboard (Active)" cursor="pointer">
+        <rect x="16" y="112" width="208" height="40" rx="8" fill="#1FE88A" fill-opacity="0.08" />
+        <!-- Dashboard Icon (Vector Paths) -->
+        <path d="M36 132H44M32 136H48M32 128V132M48 128V132" stroke="#1FE88A" stroke-width="1.8" stroke-linecap="round" />
+        <text x="60" y="136" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Dashboard</text>
+      </g>
+
+      <!-- MenuItem: Inbox -->
+      <g id="Nav-Inbox" name="Inbox" cursor="pointer">
+        <text x="60" y="176" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Inbox</text>
+      </g>
+
+      <!-- MenuItem: AI Builder -->
+      <g id="Nav-AI-Builder" name="AI Builder" cursor="pointer">
+        <text x="60" y="216" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">AI Builder</text>
+      </g>
+
+      <!-- MenuItem: Analytics -->
+      <g id="Nav-Analytics" name="Analytics" cursor="pointer">
+        <text x="60" y="256" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Analytics</text>
+      </g>
+
+      <!-- MenuItem: CRM -->
+      <g id="Nav-CRM" name="CRM" cursor="pointer">
+        <text x="60" y="296" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">CRM</text>
+      </g>
+
+      <!-- MenuItem: Bookings -->
+      <g id="Nav-Bookings" name="Bookings" cursor="pointer">
+        <text x="60" y="336" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Bookings</text>
+      </g>
+
+      <!-- MenuItem: Knowledge Base -->
+      <g id="Nav-Knowledge-Base" name="Knowledge Base" cursor="pointer">
+        <text x="60" y="376" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#7FA897">Knowledge Base</text>
+      </g>
+    </g>
+
+    <!-- User Profile Footer -->
+    <g id="Sidebar-Footer" name="User Profile">
+      <rect x="0" y="820" width="240" height="80" fill="#061810" stroke="#1A3828" stroke-dasharray="1 0" />
+      <circle cx="40" cy="860" r="16" fill="#1FE88A" fill-opacity="0.12" />
+      <text x="35" y="865" font-family="Barlow Condensed, sans-serif" font-size="14" font-weight="800" fill="#1FE88A">Y</text>
+      <text x="68" y="855" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Yasir Sheikh</text>
+      <text x="68" y="870" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Founder · Growth</text>
+    </g>
+  </g>
+
+  <!-- TOPBAR CONTAINER -->
+  <g id="Topbar" name="Topbar">
+    <!-- Topbar Background -->
+    <rect x="240" y="0" width="1200" height="64" fill="#0A2218" stroke="#1A3828" stroke-dasharray="0 0 1 0" />
+    <text x="264" y="36" font-family="Barlow Condensed, Inter, sans-serif" font-size="20" font-weight="800" fill="#EFF6F2">Dashboard</text>
+    <text x="264" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Overview of your bot's performance</text>
+
+    <!-- Notification Indicator -->
+    <g id="Topbar-Notification" name="Notifications" cursor="pointer">
+      <rect x="1380" y="14" width="36" height="36" rx="10" fill="#1FE88A" fill-opacity="0.08" stroke="#1A3828" />
+      <!-- Bell Icon vector path -->
+      <path d="M1398 22C1396 22 1395 24 1395 26V30L1393 32V33H1403V32L1401 30V26C1401 24 1400 22 1398 22Z" fill="#1FE88A" />
+      <circle cx="1406" cy="20" r="3" fill="#F59E0B" />
+    </g>
+  </g>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <g id="Main-Content" name="Content Viewport">
+    <!-- GREETING -->
+    <text x="264" y="104" font-family="Barlow Condensed, Inter, sans-serif" font-size="32" font-weight="800" fill="#EFF6F2">Good morning, Yasir 👋</text>
+    <text x="264" y="124" font-family="Inter, sans-serif" font-size="13" fill="#7FA897">Your bot handled 47 queries while you slept.</text>
+
+    <!-- KPI STATS ROW -->
+    <g id="KPI-Row" name="KPI Cards">
+      <!-- Card 1: Monthly Revenue -->
+      <g id="KPI-Revenue" name="Revenue Card" cursor="pointer">
+        <rect x="264" y="152" width="270" height="110" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="284" y="184" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Monthly Revenue</text>
+        <text x="284" y="224" font-family="Barlow Condensed, Inter, sans-serif" font-size="36" font-weight="800" fill="#EFF6F2">₹42,500</text>
+        <!-- Badge -->
+        <rect x="464" y="172" width="50" height="20" rx="10" fill="#1FE88A" fill-opacity="0.08" />
+        <text x="474" y="186" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#1FE88A">+18%</text>
+      </g>
+
+      <!-- Card 2: Active Leads -->
+      <g id="KPI-Leads" name="Leads Card" cursor="pointer">
+        <rect x="554" y="152" width="270" height="110" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="574" y="184" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Active Leads</text>
+        <text x="574" y="224" font-family="Barlow Condensed, Inter, sans-serif" font-size="36" font-weight="800" fill="#EFF6F2">128</text>
+        <rect x="754" y="172" width="50" height="20" rx="10" fill="#3B82F6" fill-opacity="0.1" />
+        <text x="764" y="186" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#3B82F6">+12%</text>
+      </g>
+
+      <!-- Card 3: Conversations Today -->
+      <g id="KPI-Convs" name="Conversations Card" cursor="pointer">
+        <rect x="844" y="152" width="270" height="110" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="864" y="184" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Conversations Today</text>
+        <text x="864" y="224" font-family="Barlow Condensed, Inter, sans-serif" font-size="36" font-weight="800" fill="#EFF6F2">63</text>
+        <rect x="1044" y="172" width="50" height="20" rx="10" fill="#F59E0B" fill-opacity="0.1" />
+        <text x="1056" y="186" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#F59E0B">+7%</text>
+      </g>
+
+      <!-- Card 4: AI Response Rate -->
+      <g id="KPI-Response-Rate" name="Response Rate Card" cursor="pointer">
+        <rect x="1134" y="152" width="270" height="110" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="1154" y="184" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">AI Response Rate</text>
+        <text x="1154" y="224" font-family="Barlow Condensed, Inter, sans-serif" font-size="36" font-weight="800" fill="#EFF6F2">94%</text>
+        <rect x="1334" y="172" width="50" height="20" rx="10" fill="#A855F7" fill-opacity="0.1" />
+        <text x="1346" y="186" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#A855F7">+3%</text>
+      </g>
+    </g>
+
+    <!-- VOLUME CHART & ACTIVITY SIDE-BY-SIDE -->
+    <g id="Charts-Row" name="Charts and Activity Details">
+      <!-- Volume Chart Card -->
+      <g id="Chart-Card" name="Conversation Volume Chart">
+        <rect x="264" y="286" width="560" height="300" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="288" y="318" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#EFF6F2">Conversation Volume</text>
+        <text x="288" y="336" font-family="Inter, sans-serif" font-size="12" fill="#7FA897">Last 12 months</text>
+        
+        <!-- Vector Polyline Chart Mock -->
+        <g id="Chart-Paths">
+          <!-- Baseline and Helper Grid Gridlines -->
+          <line x1="288" y1="520" x2="788" y2="520" stroke="#1A3828" stroke-dasharray="4 4" />
+          <line x1="288" y1="460" x2="788" y2="460" stroke="#1A3828" stroke-dasharray="4 4" />
+          <line x1="288" y1="400" x2="788" y2="400" stroke="#1A3828" stroke-dasharray="4 4" />
+          
+          <!-- Polyline vector element -->
+          <polyline points="288,520 330,500 370,510 410,440 450,470 490,410 530,390 570,400 610,380 650,350 690,360 730,310 770,290" fill="none" stroke="#1FE88A" stroke-width="2" stroke-linejoin="round" />
+          <polygon points="288,520 330,500 370,510 410,440 450,470 490,410 530,390 570,400 610,380 650,350 690,360 730,310 770,290 770,520 288,520" fill="#1FE88A" fill-opacity="0.06" />
+        </g>
+
+        <!-- Chart Labels -->
+        <g id="Chart-Labels" font-family="Inter, sans-serif" font-size="10" fill="#7FA897" text-anchor="middle">
+          <text x="288" y="546">Jan</text>
+          <text x="330" y="546">Feb</text>
+          <text x="370" y="546">Mar</text>
+          <text x="410" y="546">Apr</text>
+          <text x="450" y="546">May</text>
+          <text x="490" y="546">Jun</text>
+          <text x="530" y="546">Jul</text>
+          <text x="570" y="546">Aug</text>
+          <text x="610" y="546">Sep</text>
+          <text x="650" y="546">Oct</text>
+          <text x="690" y="546">Nov</text>
+          <text x="730" y="546">Dec</text>
+        </g>
+      </g>
+
+      <!-- Recent Activity Card -->
+      <g id="Activity-Card" name="Recent Activity Log">
+        <rect x="844" y="286" width="560" height="300" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="868" y="318" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#EFF6F2">Recent Activity</text>
+
+        <!-- Activities List -->
+        <g id="Activity-List-Items">
+          <!-- Item 1 -->
+          <g id="Activity-Item-1" transform="translate(868, 340)">
+            <circle cx="16" cy="16" r="16" fill="#1FE88A" fill-opacity="0.12" />
+            <text x="12" y="21" font-family="Barlow Condensed, sans-serif" font-size="12" font-weight="800" fill="#1FE88A">P</text>
+            <text x="44" y="14" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Priya Meshram</text>
+            <text x="44" y="28" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Booked appointment</text>
+            <text x="460" y="21" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">2 min ago</text>
+          </g>
+
+          <!-- Item 2 -->
+          <g id="Activity-Item-2" transform="translate(868, 396)">
+            <circle cx="16" cy="16" r="16" fill="#3B82F6" fill-opacity="0.12" />
+            <text x="12" y="21" font-family="Barlow Condensed, sans-serif" font-size="12" font-weight="800" fill="#3B82F6">R</text>
+            <text x="44" y="14" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Rahul Deshmukh</text>
+            <text x="44" y="28" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">New lead captured</text>
+            <text x="460" y="21" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">8 min ago</text>
+          </g>
+
+          <!-- Item 3 -->
+          <g id="Activity-Item-3" transform="translate(868, 452)">
+            <circle cx="16" cy="16" r="16" fill="#F59E0B" fill-opacity="0.12" />
+            <text x="12" y="21" font-family="Barlow Condensed, sans-serif" font-size="12" font-weight="800" fill="#F59E0B">S</text>
+            <text x="44" y="14" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Sunita Agrawal</text>
+            <text x="44" y="28" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Follow-up sent</text>
+            <text x="460" y="21" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">15 min ago</text>
+          </g>
+
+          <!-- Item 4 -->
+          <g id="Activity-Item-4" transform="translate(868, 508)">
+            <circle cx="16" cy="16" r="16" fill="#A855F7" fill-opacity="0.12" />
+            <text x="12" y="21" font-family="Barlow Condensed, sans-serif" font-size="12" font-weight="800" fill="#A855F7">A</text>
+            <text x="44" y="14" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#EFF6F2">Amit Joshi</text>
+            <text x="44" y="28" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">AI answered 3 queries</text>
+            <text x="460" y="21" font-family="Inter, sans-serif" font-size="11" fill="#7FA897" text-anchor="end">22 min ago</text>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- QUESTIONS & PERFORMANCE DETAILS -->
+    <g id="Metrics-Row" name="Questions and Performance Metrics">
+      <!-- Top Customer Questions Card -->
+      <g id="Questions-Card" name="Top Questions Log">
+        <rect x="264" y="608" width="560" height="240" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="288" y="640" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#EFF6F2">Top Customer Questions</text>
+        
+        <g id="Questions-Bars" transform="translate(288, 660)">
+          <!-- Question 1 -->
+          <g id="Q-Item-1" transform="translate(0, 0)">
+            <text x="0" y="12" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">What are your timings?</text>
+            <text x="512" y="12" font-family="Inter, sans-serif" font-size="12" fill="#7FA897" text-anchor="end">142</text>
+            <!-- Progress Bar Outline -->
+            <rect x="0" y="22" width="512" height="4" rx="2" fill="#1A3828" />
+            <rect x="0" y="22" width="450" height="4" rx="2" fill="#1FE88A" />
+          </g>
+          
+          <!-- Question 2 -->
+          <g id="Q-Item-2" transform="translate(0, 42)">
+            <text x="0" y="12" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">What is the consultation fee?</text>
+            <text x="512" y="12" font-family="Inter, sans-serif" font-size="12" fill="#7FA897" text-anchor="end">98</text>
+            <rect x="0" y="22" width="512" height="4" rx="2" fill="#1A3828" />
+            <rect x="0" y="22" width="310" height="4" rx="2" fill="#1FE88A" />
+          </g>
+
+          <!-- Question 3 -->
+          <g id="Q-Item-3" transform="translate(0, 84)">
+            <text x="0" y="12" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">Is tomorrow available?</text>
+            <text x="512" y="12" font-family="Inter, sans-serif" font-size="12" fill="#7FA897" text-anchor="end">76</text>
+            <rect x="0" y="22" width="512" height="4" rx="2" fill="#1A3828" />
+            <rect x="0" y="22" width="240" height="4" rx="2" fill="#1FE88A" />
+          </g>
+
+          <!-- Question 4 -->
+          <g id="Q-Item-4" transform="translate(0, 126)">
+            <text x="0" y="12" font-family="Inter, sans-serif" font-size="13" fill="#EFF6F2">Do you take insurance?</text>
+            <text x="512" y="12" font-family="Inter, sans-serif" font-size="12" fill="#7FA897" text-anchor="end">54</text>
+            <rect x="0" y="22" width="512" height="4" rx="2" fill="#1A3828" />
+            <rect x="0" y="22" width="170" height="4" rx="2" fill="#1FE88A" />
+          </g>
+        </g>
+      </g>
+
+      <!-- Bot Performance Stats Card -->
+      <g id="Performance-Card" name="Performance Stats">
+        <rect x="844" y="608" width="560" height="240" rx="16" fill="#0d2e20" stroke="#1A3828" />
+        <text x="868" y="640" font-family="Inter, sans-serif" font-size="15" font-weight="700" fill="#EFF6F2">Bot Performance</text>
+
+        <!-- KPI Grid blocks -->
+        <g id="Performance-Grid" transform="translate(868, 660)">
+          <!-- Grid Card 1 -->
+          <g id="Perf-Grid-1" transform="translate(0, 0)">
+            <rect width="160" height="70" rx="10" fill="#061810" />
+            <text x="16" y="32" font-family="Barlow Condensed, Inter, sans-serif" font-size="26" font-weight="800" fill="#1FE88A">1.2s</text>
+            <text x="16" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Avg response time</text>
+          </g>
+
+          <!-- Grid Card 2 -->
+          <g id="Perf-Grid-2" transform="translate(176, 0)">
+            <rect width="160" height="70" rx="10" fill="#061810" />
+            <text x="16" y="32" font-family="Barlow Condensed, Inter, sans-serif" font-size="26" font-weight="800" fill="#1FE88A">4.8/5</text>
+            <text x="16" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Customer satisfaction</text>
+          </g>
+
+          <!-- Grid Card 3 -->
+          <g id="Perf-Grid-3" transform="translate(352, 0)">
+            <rect width="160" height="70" rx="10" fill="#061810" />
+            <text x="16" y="32" font-family="Barlow Condensed, Inter, sans-serif" font-size="26" font-weight="800" fill="#1FE88A">91%</text>
+            <text x="16" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Queries resolved by AI</text>
+          </g>
+
+          <!-- Grid Card 4 -->
+          <g id="Perf-Grid-4" transform="translate(0, 86)">
+            <rect width="160" height="70" rx="10" fill="#061810" />
+            <text x="16" y="32" font-family="Barlow Condensed, Inter, sans-serif" font-size="26" font-weight="800" fill="#1FE88A">14</text>
+            <text x="16" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Leads captured today</text>
+          </g>
+
+          <!-- Grid Card 5 -->
+          <g id="Perf-Grid-5" transform="translate(176, 86)">
+            <rect width="160" height="70" rx="10" fill="#061810" />
+            <text x="16" y="32" font-family="Barlow Condensed, Inter, sans-serif" font-size="26" font-weight="800" fill="#1FE88A">32</text>
+            <text x="16" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Bookings this week</text>
+          </g>
+
+          <!-- Grid Card 6 -->
+          <g id="Perf-Grid-6" transform="translate(352, 86)">
+            <rect width="160" height="70" rx="10" fill="#061810" />
+            <text x="16" y="32" font-family="Barlow Condensed, Inter, sans-serif" font-size="26" font-weight="800" fill="#1FE88A">67</text>
+            <text x="16" y="52" font-family="Inter, sans-serif" font-size="11" fill="#7FA897">Follow-ups sent</text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
