@@ -5,4 +5,5 @@ export const COLLECTIONS = {
   CUSTOMERS: "customers",
   CONVERSATIONS: "conversations",
   KNOWLEDGE: "knowledge",
+  WHATSAPP_CONNECTIONS: "whatsapp_connections",
 };

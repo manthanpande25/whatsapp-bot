@@ -1,104 +1,113 @@
 import { Request, Response } from "express";
 import axios from "axios";
+import aiService from "./ai.service";
+import chatService from "./chat.service";
+import whatsappConnectionService from "./whatsapp-connection.service";
 
 class WhatsAppService {
-  async verifyWebhook(req: Request, res: Response) {
-  console.log("========== VERIFY ==========");
-  console.log(req.query);
-  console.log("Received token:", req.query["hub.verify_token"]);
-  console.log("Expected token:", process.env.META_VERIFY_TOKEN);
+	async verifyWebhook(req: Request, res: Response) {
+		console.log("========== VERIFY ==========");
+		console.log(req.query);
 
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
+		const mode = req.query["hub.mode"];
+		const token = req.query["hub.verify_token"];
+		const challenge = req.query["hub.challenge"];
 
-  if (mode === "subscribe") {
-    console.log("✅ Mode OK");
-  } else {
-    console.log("❌ Mode Failed");
-  }
+		if (mode === "subscribe" && token === process.env.META_VERIFY_TOKEN) {
+			console.log("✅ Webhook Verified");
+			return res.status(200).send(challenge);
+		}
 
-  if (token === process.env.META_VERIFY_TOKEN) {
-    console.log("✅ Token OK");
-  } else {
-    console.log("❌ Token Failed");
-  }
+		console.log("❌ Verification Failed");
+		return res.sendStatus(403);
+	}
 
-  if (
-    mode === "subscribe" &&
-    token === process.env.META_VERIFY_TOKEN
-  ) {
-    return res.status(200).send(challenge);
-  }
+	async sendMessage(
+		accessToken: string,
+		phoneNumberId: string,
+		to: string,
+		message: string,
+	) {
+		try {
+			const response = await axios.post(
+				`https://graph.facebook.com/v23.0/${phoneNumberId}/messages`,
+				{
+					messaging_product: "whatsapp",
+					to,
+					type: "text",
+					text: {
+						body: message,
+					},
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						"Content-Type": "application/json",
+					},
+				},
+			);
 
-  return res.sendStatus(403);
-}
-  async sendMessage(to: string, message: string) {
-  try {
-    console.log("Sending to:", to);
-    console.log("Phone Number ID:", process.env.PHONE_NUMBER_ID);
+			console.log("✅ Message Sent");
+			console.log(response.data);
+		} catch (err: any) {
+			console.log("========== META ERROR ==========");
+			console.log(err.response?.data || err.message);
+			console.log("===============================");
+		}
+	}
 
-    const response = await axios.post(
-      `https://graph.facebook.com/v23.0/${process.env.PHONE_NUMBER_ID}/messages`,
-      {
-        messaging_product: "whatsapp",
-        to,
-        type: "text",
-        text: {
-          body: message,
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.META_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+	async receiveWebhook(req: Request, res: Response) {
+		try {
+			console.log("📩 Incoming Webhook");
+			console.log(JSON.stringify(req.body, null, 2));
 
-    console.log("✅ Message Sent");
-    console.log(response.data);
+			const message =
+				req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-  } catch (err: any) {
-    console.log("========== META ERROR ==========");
-    console.log("Status:", err.response?.status);
-    console.log("Data:", JSON.stringify(err.response?.data, null, 2));
-    console.log("===============================");
-  }
-}
+			if (!message) {
+				return res.sendStatus(200);
+			}
 
-  async receiveWebhook(req: Request, res: Response) {
-  try {
-    console.log("📩 Incoming Webhook");
-    console.log(JSON.stringify(req.body, null, 2));
+			const from = message.from;
+			const text = message.text?.body ?? "";
+			const phoneNumberId =
+				req.body.entry?.[0]?.changes?.[0]?.value?.metadata
+					?.phone_number_id;
 
-    const entry = req.body.entry?.[0];
-    const changes = entry?.changes?.[0];
-    const value = changes?.value;
+			console.log("📞 Phone Number ID:", phoneNumberId);
+			console.log("📱 From:", from);
+			console.log("💬 Message:", text);
 
-    const message = value?.messages?.[0];
+			console.log("🤖 Calling Chat Service...");
 
-    if (!message) {
-      return res.sendStatus(200);
-    }
+			const connection =
+				await whatsappConnectionService.getByPhoneNumberId(
+					phoneNumberId,
+				);
 
-    const from = message.from;
-    const text = message.text?.body;
+			const aiResponse = await chatService.sendMessage(
+				connection.organizationId,
+				from,
+				text,
+			);
 
-    console.log("📱 From:", from);
-    console.log("💬 Message:", text);
-    await this.sendMessage(
-  from,
-  `Hello 👋 You said: "${text}"`
-);
+			console.log("🤖 AI Response:", aiResponse);
 
-    return res.sendStatus(200);
+			await this.sendMessage(
+				connection.accessToken,
+				connection.phoneNumberId,
+				from,
+				aiResponse.reply,
+			);
 
-  } catch (error) {
-    console.error(error);
-    return res.sendStatus(500);
-  }
-}
+			console.log("✅ Reply sent to WhatsApp");
+
+			return res.sendStatus(200);
+		} catch (error) {
+			console.error("Webhook Error:", error);
+			return res.sendStatus(500);
+		}
+	}
 }
 
 export default new WhatsAppService();

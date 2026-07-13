@@ -9,6 +9,7 @@ import aiRoutes from "./routes/ai.routes";
 import knowledgeRoutes from "./routes/knowledge.routes";
 import chatRoutes from "./routes/chat.routes";
 import whatsappRoutes from "./routes/whatsapp.routes";
+import whatsappConnectionRoutes from "./routes/whatsapp-connection.routes";
 
 dotenv.config();
 console.log("META_VERIFY_TOKEN =", process.env.META_VERIFY_TOKEN);
@@ -26,6 +27,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/knowledge", knowledgeRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
+app.use("/api/whatsapp", whatsappConnectionRoutes);
 
 
 // Health Check
