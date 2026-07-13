@@ -22,6 +22,13 @@ class ChatService {
           customerPhone
         );
 
+      // Get previous conversation
+      const history = await messageService.getRecentMessages(
+        conversation.id!,
+        10
+      );
+
+      // Save current user message
       await messageService.createMessage({
         conversationId: conversation.id!,
         sender: "USER",
@@ -36,6 +43,7 @@ class ChatService {
       const prompt = buildPrompt(
         aiAgent,
         knowledge,
+        history,
         message
       );
 

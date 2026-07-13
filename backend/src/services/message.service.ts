@@ -22,6 +22,23 @@ class MessageService {
       id: messageRef.id,
     };
   }
+
+  async getRecentMessages(
+    conversationId: string,
+    limit: number = 10
+  ): Promise<IMessage[]> {
+    const snapshot = await db
+      .collection(COLLECTIONS.CONVERSATIONS)
+      .doc(conversationId)
+      .collection("messages")
+      .orderBy("createdAt", "desc")
+      .limit(limit)
+      .get();
+
+    return snapshot.docs
+      .map((doc) => doc.data() as IMessage)
+      .reverse();
+  }
 }
 
 export default new MessageService();

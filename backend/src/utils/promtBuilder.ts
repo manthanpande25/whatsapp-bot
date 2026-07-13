@@ -1,37 +1,42 @@
 import { IAIAgent } from "../interfaces/ai.interface";
 import { IKnowledge } from "../interfaces/knowledge.interface";
+import { IMessage } from "../interfaces/message.interface";
 
 export function buildPrompt(
   aiAgent: IAIAgent,
   knowledge: IKnowledge[],
+  history: IMessage[],
   userMessage: string
 ): string {
   const knowledgeText = knowledge
-    .map(
-      (item) =>
-        `Question: ${item.question}\nAnswer: ${item.answer}\nCategory: ${item.category}`
-    )
+    .map((item) => `- ${item.question}\n${item.answer}`)
     .join("\n\n");
 
-  return `
-You are ${aiAgent.botName}.
+  const conversationHistory = history
+    .map((msg) => {
+      const role = msg.sender === "USER" ? "Customer" : "Assistant";
+      return `${role}: ${msg.text}`;
+    })
+    .join("\n");
 
-System Instructions:
+  return `
 ${aiAgent.systemPrompt}
 
 Business Knowledge:
 ${knowledgeText}
 
-Customer Message:
+Conversation History:
+${conversationHistory}
+
+Current Customer Message:
 ${userMessage}
 
 Rules:
-- Reply naturally like a human customer support agent.
-- Use ONLY the provided business knowledge.
-- If the answer is not available, politely say you don't know and ask the customer to contact the business.
-- Keep responses short, clear, and professional.
-- Do NOT greet the customer in every reply.
-- Only greet the customer if they are starting the conversation (e.g. "Hi", "Hello", "Hey").
-- Never repeat the welcome message unless the conversation has just started.
+- Answer using the business knowledge.
+- Use conversation history for context.
+- Do not invent phone numbers, emails, addresses, or services.
+- Do not add promotional or marketing text unless it exists in the knowledge base.
+- Keep responses short and direct.
+- If the answer is unknown, politely say you don't know.
 `;
 }
