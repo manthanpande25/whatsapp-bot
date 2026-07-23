@@ -1,75 +1,77 @@
+import { useEffect, useState } from "react";
 import { Avatar, Badge, Btn, Card, Icon, Stat } from "../components";
 import { T } from "../constants/theme";
-
-interface Contact {
-	name: string;
-	phone: string;
-	status: "Hot Lead" | "Customer" | "Cold Lead";
-	tag: string;
-	bookings: number;
-	last: string;
-}
+import { getCustomers } from "../services/customer.service";
+import type { Customer } from "../types/customer";
 
 export function CRM() {
-	const contacts: Contact[] = [
-		{
-			name: "Priya Meshram",
-			phone: "+91 98765 43210",
-			status: "Hot Lead",
-			tag: "Clinic",
-			bookings: 3,
-			last: "Today",
-		},
-		{
-			name: "Rahul Deshmukh",
-			phone: "+91 87654 32109",
-			status: "Customer",
-			tag: "Coaching",
-			bookings: 1,
-			last: "Yesterday",
-		},
-		{
-			name: "Sunita Agrawal",
-			phone: "+91 76543 21098",
-			status: "Cold Lead",
-			tag: "Salon",
-			bookings: 0,
-			last: "3 days ago",
-		},
-		{
-			name: "Amit Joshi",
-			phone: "+91 65432 10987",
-			status: "Customer",
-			tag: "Restaurant",
-			bookings: 7,
-			last: "Today",
-		},
-		{
-			name: "Neha Sharma",
-			phone: "+91 54321 09876",
-			status: "Hot Lead",
-			tag: "Clinic",
-			bookings: 0,
-			last: "1h ago",
-		},
-		{
-			name: "Vikram Pawar",
-			phone: "+91 43210 98765",
-			status: "Customer",
-			tag: "Coaching",
-			bookings: 4,
-			last: "2 days ago",
-		},
-	];
+	const [contacts, setContacts] = useState<Customer[]>([]);
+	const [loading, setLoading] = useState(true);
 
-	const statusColors = {
-		"Hot Lead": T.red,
-		Customer: T.jade,
-		"Cold Lead": T.muted,
+	useEffect(() => {
+	loadCustomers();
+
+	const interval = setInterval(() => {
+		
+		loadCustomers();
+	}, 5000);
+
+	return () => clearInterval(interval);
+}, []);
+	async function loadCustomers() {
+		
+		try {
+			const token = localStorage.getItem("token");
+			const organizationId = localStorage.getItem("organizationId");
+
+			if (!token || !organizationId) {
+				console.log("Token or Organization ID not found");
+				return;
+			}
+
+			const response = await getCustomers(organizationId, token);
+			
+
+			
+
+			setContacts(response.data);
+		} catch (error) {
+			console.error("Error:", error);
+		} finally {
+			setLoading(false);
+		}
+	}
+	const statusColors: Record<Customer["status"], string> = {
+		NEW: T.blue,
+		CONTACTED: T.amber,
+		QUALIFIED: T.red,
+		CUSTOMER: T.jade,
 	};
 
+	if (loading) {
+		return (
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100%",
+					color: T.white,
+					fontSize: 18,
+				}}
+			>
+				Loading customers...
+			</div>
+		);
+	}
 	return (
-		<div style={{ padding: "clamp(16px, 4vw, 28px)", flex: 1, overflowY: "auto" }}>
+		<div
+			style={{
+				padding: "clamp(16px, 4vw, 28px)",
+				flex: 1,
+				overflowY: "auto",
+			}}
+		>
 			<div
 				style={{
 					display: "flex",
@@ -183,136 +185,152 @@ export function CRM() {
 					)}
 				</div>
 				<div className="crm-table-container">
-					<table style={{ width: "100%", borderCollapse: "collapse" }}>
-					<thead>
-						<tr style={{ background: T.deep }}>
-							{[
-								"Name",
-								"Phone",
-								"Status",
-								"Business",
-								"Bookings",
-								"Last seen",
-								"",
-							].map((h) => (
-								<th
-									key={h}
-									style={{
-										padding: "12px 20px",
-										textAlign: "left",
-										fontSize: 12,
-										fontWeight: 600,
-										color: T.muted,
-										textTransform: "uppercase",
-										letterSpacing: ".06em",
-									}}
-								>
-									{h}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{contacts.map((c, i) => (
-							<tr
-								key={i}
-								style={{
-									borderTop: `1px solid ${T.border}`,
-									cursor: "pointer",
-									transition: "background .15s",
-								}}
-								onMouseEnter={(e) =>
-									(e.currentTarget.style.background =
-										T.jadeDim)
-								}
-								onMouseLeave={(e) =>
-									(e.currentTarget.style.background =
-										"transparent")
-								}
-							>
-								<td style={{ padding: "14px 20px" }}>
-									<div
+					<table
+						style={{ width: "100%", borderCollapse: "collapse" }}
+					>
+						<thead>
+							<tr style={{ background: T.deep }}>
+								{[
+									"Customer",
+									"Phone",
+									"Status",
+									"Last Message",
+									"Messages",
+									"Last Seen",
+									"",
+								].map((h) => (
+									<th
+										key={h}
 										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: 10,
+											padding: "12px 20px",
+											textAlign: "left",
+											fontSize: 12,
+											fontWeight: 600,
+											color: T.muted,
+											textTransform: "uppercase",
+											letterSpacing: ".06em",
 										}}
 									>
-										<Avatar name={c.name} size={32} />
-										<span
+										{h}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody>
+							{contacts.map((c, i) => (
+								<tr
+									key={i}
+									style={{
+										borderTop: `1px solid ${T.border}`,
+										cursor: "pointer",
+										transition: "background .15s",
+									}}
+									onMouseEnter={(e) =>
+										(e.currentTarget.style.background =
+											T.jadeDim)
+									}
+									onMouseLeave={(e) =>
+										(e.currentTarget.style.background =
+											"transparent")
+									}
+								>
+									<td style={{ padding: "14px 20px" }}>
+										<div
 											style={{
-												fontSize: 13,
-												fontWeight: 600,
-												color: T.cream,
+												display: "flex",
+												alignItems: "center",
+												gap: 10,
 											}}
 										>
-											{c.name}
-										</span>
-									</div>
-								</td>
-								<td
-									style={{
-										padding: "14px 20px",
-										fontSize: 13,
-										color: T.muted,
-									}}
-								>
-									{c.phone}
-								</td>
-								<td style={{ padding: "14px 20px" }}>
-									<Badge
-										color={statusColors[c.status]}
-										bg={statusColors[c.status] + "22"}
+											<Avatar name={c.name} size={32} />
+											<span
+												style={{
+													fontSize: 13,
+													fontWeight: 600,
+													color: T.cream,
+												}}
+											>
+												{c.name}
+											</span>
+										</div>
+									</td>
+									<td
+										style={{
+											padding: "14px 20px",
+											fontSize: 13,
+											color: T.muted,
+										}}
 									>
-										{c.status}
-									</Badge>
-								</td>
-								<td style={{ padding: "14px 20px" }}>
-									<Badge color={T.blue} bg={T.blue + "22"}>
-										{c.tag}
-									</Badge>
-								</td>
-								<td
-									style={{
-										padding: "14px 20px",
-										fontSize: 13,
-										color: T.cream,
-										fontWeight: 600,
-									}}
-								>
-									{c.bookings}
-								</td>
-								<td
-									style={{
-										padding: "14px 20px",
-										fontSize: 12,
-										color: T.muted,
-									}}
-								>
-									{c.last}
-								</td>
-								<td style={{ padding: "14px 20px" }}>
-									<div style={{ display: "flex", gap: 6 }}>
-										<Btn variant="ghost" size="sm">
-											<Icon
-												name="msg"
-												size={13}
-												color={T.jade}
-											/>
-										</Btn>
-										<Btn variant="ghost" size="sm">
-											<Icon
-												name="eye"
-												size={13}
-												color={T.muted}
-											/>
-										</Btn>
-									</div>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+										{c.phone}
+									</td>
+									<td style={{ padding: "14px 20px" }}>
+										<Badge
+											color={statusColors[c.status]}
+											bg={statusColors[c.status] + "22"}
+										>
+											{c.status}
+										</Badge>
+									</td>
+									<td
+										style={{
+											padding: "14px 20px",
+											fontSize: 13,
+											color: T.cream,
+											maxWidth: 220,
+											whiteSpace: "nowrap",
+											overflow: "hidden",
+											textOverflow: "ellipsis",
+										}}
+									>
+										{c.lastMessage || "-"}
+									</td>
+									<td
+										style={{
+											padding: "14px 20px",
+											fontSize: 13,
+											color: T.cream,
+											fontWeight: 600,
+										}}
+									>
+										{c.totalMessages}
+									</td>
+									<td
+										style={{
+											padding: "14px 20px",
+											fontSize: 12,
+											color: T.muted,
+										}}
+									>
+										{c.lastSeen
+											? new Date(
+													c.lastSeen._seconds * 1000,
+												).toLocaleString()
+											: "-"}
+									</td>
+									<td style={{ padding: "14px 20px" }}>
+										<div
+											style={{ display: "flex", gap: 6 }}
+										>
+											<Btn variant="ghost" size="sm">
+												<Icon
+													name="msg"
+													size={13}
+													color={T.jade}
+												/>
+											</Btn>
+											<Btn variant="ghost" size="sm">
+												<Icon
+													name="eye"
+													size={13}
+													color={T.muted}
+												/>
+											</Btn>
+										</div>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
 			</Card>
 		</div>
