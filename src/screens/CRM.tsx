@@ -19,6 +19,7 @@ export function CRM() {
 	const [contacts, setContacts] = useState<Customer[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState("");
+	const [editName, setEditName] = useState("");
 
 	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
 		null,
@@ -88,6 +89,7 @@ export function CRM() {
 		setEditStatus(customer.status);
 		setEditNotes(customer.notes || "");
 		setDrawerOpen(true);
+		setEditName(customer.name);
 	}
 	if (loading) {
 		return (
@@ -116,6 +118,7 @@ export function CRM() {
 			await updateCustomer(
 				selectedCustomer.id,
 				{
+					name: editName,
 					status: editStatus,
 					notes: editNotes,
 					tags: selectedCustomer.tags,
@@ -451,38 +454,21 @@ export function CRM() {
 			>
 				{selectedCustomer && (
 					<>
-						<DrawerSection label="Customer">
+						<DrawerSection label="Customer Name">
+							<input
+								value={editName}
+								onChange={(e) => setEditName(e.target.value)}
+								style={drawerInput}
+							/>
+
 							<div
 								style={{
-									display: "flex",
-									alignItems: "center",
-									gap: 12,
+									marginTop: 12,
+									fontSize: 13,
+									color: T.muted,
 								}}
 							>
-								<Avatar
-									name={selectedCustomer.name}
-									size={52}
-								/>
-
-								<div>
-									<div
-										style={{
-											color: T.white,
-											fontWeight: 700,
-										}}
-									>
-										{selectedCustomer.name}
-									</div>
-
-									<div
-										style={{
-											color: T.muted,
-											fontSize: 13,
-										}}
-									>
-										{selectedCustomer.phone}
-									</div>
-								</div>
+								{selectedCustomer.phone}
 							</div>
 						</DrawerSection>
 
