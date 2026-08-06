@@ -1,3 +1,5 @@
+// src/components/index.ts
+
 export * from "./Icon";
 export * from "./Badge";
 export * from "./Card";
@@ -11,3 +13,4 @@ export * from "./Toast";
 export * from "./Sidebar";
 export * from "./Topbar";
 export * from "./AppLayout";
+export * from "./Drawer";

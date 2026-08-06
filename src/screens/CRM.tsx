@@ -1,25 +1,53 @@
 import { useEffect, useState } from "react";
-import { Avatar, Badge, Btn, Card, Icon, Stat } from "../components";
+import {
+	Avatar,
+	Badge,
+	Btn,
+	Card,
+	Icon,
+	Stat,
+	Drawer,
+	DrawerSection,
+	drawerInput,
+} from "../components";
 import { T } from "../constants/theme";
 import { getCustomers } from "../services/customer.service";
 import type { Customer } from "../types/customer";
+import { updateCustomer } from "../services/customer.service";
 
 export function CRM() {
 	const [contacts, setContacts] = useState<Customer[]>([]);
 	const [loading, setLoading] = useState(true);
 
+	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+		null,
+	);
+
+	const [drawerOpen, setDrawerOpen] = useState(false);
+
+	const [editStatus, setEditStatus] = useState<Customer["status"]>("NEW");
+
+	const [editNotes, setEditNotes] = useState("");
+	const totalContacts = contacts.length;
+
+const customers = contacts.filter(
+    c => c.status === "CUSTOMER"
+).length;
+
+const newLeads = contacts.filter(
+    c => c.status === "NEW"
+).length;
+
 	useEffect(() => {
-	loadCustomers();
-
-	const interval = setInterval(() => {
-		
 		loadCustomers();
-	}, 5000);
 
-	return () => clearInterval(interval);
-}, []);
+		const interval = setInterval(() => {
+			loadCustomers();
+		}, 5000);
+
+		return () => clearInterval(interval);
+	}, []);
 	async function loadCustomers() {
-		
 		try {
 			const token = localStorage.getItem("token");
 			const organizationId = localStorage.getItem("organizationId");
@@ -30,9 +58,6 @@ export function CRM() {
 			}
 
 			const response = await getCustomers(organizationId, token);
-			
-
-			
 
 			setContacts(response.data);
 		} catch (error) {
@@ -48,6 +73,12 @@ export function CRM() {
 		CUSTOMER: T.jade,
 	};
 
+	function openCustomer(customer: Customer) {
+		setSelectedCustomer(customer);
+		setEditStatus(customer.status);
+		setEditNotes(customer.notes || "");
+		setDrawerOpen(true);
+	}
 	if (loading) {
 		return (
 			<div
@@ -64,7 +95,32 @@ export function CRM() {
 			</div>
 		);
 	}
-	return (
+async function saveCustomer() {
+	if (!selectedCustomer) return;
+
+	try {
+		const token = localStorage.getItem("token");
+
+		if (!token) return;
+
+		await updateCustomer(
+			selectedCustomer.id,
+			{
+				status: editStatus,
+				notes: editNotes,
+				tags: selectedCustomer.tags,
+			},
+			token,
+		);
+
+		await loadCustomers();
+
+		setDrawerOpen(false);
+		setSelectedCustomer(null);
+	} catch (error) {
+		console.error("Failed to update customer:", error);
+	}
+}	return (
 		<div
 			style={{
 				padding: "clamp(16px, 4vw, 28px)",
@@ -94,7 +150,7 @@ export function CRM() {
 						CRM
 					</div>
 					<div style={{ fontSize: 13, color: T.muted }}>
-						312 contacts · 89 hot leads
+						{contacts.length} contacts · {newLeads} new leads
 					</div>
 				</div>
 				<div style={{ display: "flex", gap: 10 }}>
@@ -142,20 +198,20 @@ export function CRM() {
 			>
 				<Stat
 					label="Total Contacts"
-					value="312"
+					value={totalContacts.toString()}
 					change={15}
 					icon="users"
 				/>
 				<Stat
 					label="Hot Leads"
-					value="89"
+					value={totalContacts.toString()}
 					change={22}
 					icon="zap"
 					color={T.red}
 				/>
 				<Stat
 					label="Converted This Month"
-					value="34"
+					value={totalContacts.toString()}
 					change={18}
 					icon="check"
 					color={T.amber}
@@ -217,9 +273,10 @@ export function CRM() {
 							</tr>
 						</thead>
 						<tbody>
-							{contacts.map((c, i) => (
+							{contacts.map((c) => (
 								<tr
-									key={i}
+									onClick={() => openCustomer(c)}
+									key={c.id}
 									style={{
 										borderTop: `1px solid ${T.border}`,
 										cursor: "pointer",
@@ -311,14 +368,28 @@ export function CRM() {
 										<div
 											style={{ display: "flex", gap: 6 }}
 										>
-											<Btn variant="ghost" size="sm">
+											<Btn
+												variant="ghost"
+												size="sm"
+												onClick={(e) => {
+													e.stopPropagation();
+													
+												}}
+											>
 												<Icon
 													name="msg"
 													size={13}
 													color={T.jade}
 												/>
 											</Btn>
-											<Btn variant="ghost" size="sm">
+											<Btn
+												variant="ghost"
+												size="sm"
+												onClick={(e) => {
+													e.stopPropagation();
+													openCustomer(c);
+												}}
+											>
 												<Icon
 													name="eye"
 													size={13}
@@ -333,6 +404,168 @@ export function CRM() {
 					</table>
 				</div>
 			</Card>
+
+
+			<Drawer
+    open={drawerOpen}
+    title="Customer Details"
+    onClose={() => setDrawerOpen(false)}
+    width={460}
+    footer={
+        <Btn
+            onClick={saveCustomer}
+            style={{
+                width: "100%",
+                justifyContent: "center",
+            }}
+        >
+            Save Changes
+        </Btn>
+    }
+>
+    {selectedCustomer && (
+        <>
+            <DrawerSection label="Customer">
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                    }}
+                >
+                    <Avatar
+                        name={selectedCustomer.name}
+                        size={52}
+                    />
+
+                    <div>
+                        <div
+                            style={{
+                                color: T.white,
+                                fontWeight: 700,
+                            }}
+                        >
+                            {selectedCustomer.name}
+                        </div>
+
+                        <div
+                            style={{
+                                color: T.muted,
+                                fontSize: 13,
+                            }}
+                        >
+                            {selectedCustomer.phone}
+                        </div>
+                    </div>
+                </div>
+            </DrawerSection>
+
+            <DrawerSection label="Status">
+                <select
+                    value={editStatus}
+                    onChange={(e) =>
+                        setEditStatus(
+                            e.target.value as Customer["status"],
+                        )
+                    }
+                    style={drawerInput}
+                >
+                    <option>NEW</option>
+                    <option>CONTACTED</option>
+                    <option>QUALIFIED</option>
+                    <option>CUSTOMER</option>
+                </select>
+            </DrawerSection>
+
+            <DrawerSection label="Notes">
+                <textarea
+                    rows={6}
+                    value={editNotes}
+                    onChange={(e) =>
+                        setEditNotes(e.target.value)
+                    }
+                    style={{
+                        ...drawerInput,
+                        resize: "vertical",
+                    }}
+                />
+            </DrawerSection>
+
+            <DrawerSection label="Tags">
+                <div
+                    style={{
+                        display: "flex",
+                        gap: 8,
+                        flexWrap: "wrap",
+                    }}
+                >
+                    {selectedCustomer.tags?.length ? (
+                        selectedCustomer.tags.map((tag) => (
+                            <Badge
+                                key={tag}
+                                color={T.jade}
+                                bg={T.jade + "22"}
+                            >
+                                {tag}
+                            </Badge>
+                        ))
+                    ) : (
+                        <span
+                            style={{
+                                color: T.muted,
+                            }}
+                        >
+                            No tags
+                        </span>
+                    )}
+                </div>
+            </DrawerSection>
+
+            <DrawerSection label="Last Message">
+                <Card>
+                    <div
+                        style={{
+                            color: T.cream,
+                            lineHeight: 1.6,
+                        }}
+                    >
+                        {selectedCustomer.lastMessage ||
+                            "No messages"}
+                    </div>
+                </Card>
+            </DrawerSection>
+
+            <DrawerSection label="Messages">
+                <div
+                    style={{
+                        fontSize: 26,
+                        fontWeight: 700,
+                        color: T.white,
+                    }}
+                >
+                    {selectedCustomer.totalMessages}
+                </div>
+            </DrawerSection>
+
+            <DrawerSection label="Last Seen">
+                <div
+                    style={{
+                        color: T.muted,
+                    }}
+                >
+                    {selectedCustomer.lastSeen
+                        ? new Date(
+                              selectedCustomer.lastSeen
+                                  ._seconds * 1000,
+                          ).toLocaleString()
+                        : "Never"}
+                </div>
+            </DrawerSection>
+        </>
+    )}
+</Drawer>
 		</div>
+
+		
 	);
 }
