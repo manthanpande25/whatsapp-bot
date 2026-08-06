@@ -19,6 +19,9 @@ export function CRM() {
 	const [contacts, setContacts] = useState<Customer[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState("");
+	const [filter, setFilter] = useState<
+		"ALL" | "NEW" | "CONTACTED" | "QUALIFIED" | "CUSTOMER"
+	>("ALL");
 	const [editName, setEditName] = useState("");
 
 	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
@@ -30,6 +33,15 @@ export function CRM() {
 	const [editStatus, setEditStatus] = useState<Customer["status"]>("NEW");
 
 	const [editNotes, setEditNotes] = useState("");
+
+	 const filterOptions = [
+        { label: "All", value: "ALL" },
+        { label: "New", value: "NEW" },
+        { label: "Contacted", value: "CONTACTED" },
+        { label: "Qualified", value: "QUALIFIED" },
+        { label: "Customers", value: "CUSTOMER" },
+    ] as const;
+	
 	const totalContacts = contacts.length;
 
 	const customers = contacts.filter((c) => c.status === "CUSTOMER").length;
@@ -74,14 +86,16 @@ export function CRM() {
 	const filteredContacts = contacts.filter((customer) => {
 		const query = search.toLowerCase().trim();
 
-		if (!query) return true;
-
-		return (
+		const matchesSearch =
+			!query ||
 			customer.name.toLowerCase().includes(query) ||
 			customer.phone.toLowerCase().includes(query) ||
 			customer.status.toLowerCase().includes(query) ||
-			customer.lastMessage.toLowerCase().includes(query)
-		);
+			customer.lastMessage.toLowerCase().includes(query);
+
+		const matchesFilter = filter === "ALL" || customer.status === filter;
+
+		return matchesSearch && matchesFilter;
 	});
 
 	function openCustomer(customer: Customer) {
@@ -244,17 +258,18 @@ export function CRM() {
 						gap: 8,
 					}}
 				>
-					{["All", "Hot Leads", "Customers", "Cold Leads"].map(
-						(f) => (
-							<Btn
-								key={f}
-								variant={f === "All" ? "primary" : "ghost"}
-								size="sm"
-							>
-								{f}
-							</Btn>
-						),
-					)}
+					
+{filterOptions.map((item) => (
+                        <Btn
+                            key={item.value}
+                            size="sm"
+                            variant={filter === item.value ? "primary" : "ghost"}
+                            onClick={() => setFilter(item.value)}
+                        >
+                            {item.label}
+                        </Btn>
+                    ))}
+
 				</div>
 				<div className="crm-table-container">
 					<table
