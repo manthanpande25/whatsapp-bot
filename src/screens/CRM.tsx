@@ -34,19 +34,22 @@ export function CRM() {
 
 	const [editNotes, setEditNotes] = useState("");
 
-	 const filterOptions = [
-        { label: "All", value: "ALL" },
-        { label: "New", value: "NEW" },
-        { label: "Contacted", value: "CONTACTED" },
-        { label: "Qualified", value: "QUALIFIED" },
-        { label: "Customers", value: "CUSTOMER" },
-    ] as const;
-	
+	const filterOptions = [
+		{ label: "All", value: "ALL" },
+		{ label: "New", value: "NEW" },
+		{ label: "Contacted", value: "CONTACTED" },
+		{ label: "Qualified", value: "QUALIFIED" },
+		{ label: "Customers", value: "CUSTOMER" },
+	] as const;
+
 	const totalContacts = contacts.length;
 
 	const customers = contacts.filter((c) => c.status === "CUSTOMER").length;
 
 	const newLeads = contacts.filter((c) => c.status === "NEW").length;
+	const contacted = contacts.filter((c) => c.status === "CONTACTED").length;
+
+	const qualified = contacts.filter((c) => c.status === "QUALIFIED").length;
 
 	useEffect(() => {
 		loadCustomers();
@@ -178,7 +181,7 @@ export function CRM() {
 						CRM
 					</div>
 					<div style={{ fontSize: 13, color: T.muted }}>
-						{contacts.length} contacts · {newLeads} new leads
+						{totalContacts} Contacts • {customers} Customers • {newLeads} New Leads
 					</div>
 				</div>
 				<div style={{ display: "flex", gap: 10 }}>
@@ -229,22 +232,24 @@ export function CRM() {
 				<Stat
 					label="Total Contacts"
 					value={totalContacts.toString()}
-					change={15}
+					change={0}
 					icon="users"
 				/>
+
 				<Stat
-					label="Hot Leads"
-					value={totalContacts.toString()}
-					change={22}
+					label="New Leads"
+					value={newLeads.toString()}
+					change={0}
 					icon="zap"
-					color={T.red}
+					color={T.blue}
 				/>
+
 				<Stat
-					label="Converted This Month"
-					value={totalContacts.toString()}
-					change={18}
+					label="Customers"
+					value={customers.toString()}
+					change={0}
 					icon="check"
-					color={T.amber}
+					color={T.jade}
 				/>
 			</div>
 
@@ -258,18 +263,18 @@ export function CRM() {
 						gap: 8,
 					}}
 				>
-					
-{filterOptions.map((item) => (
-                        <Btn
-                            key={item.value}
-                            size="sm"
-                            variant={filter === item.value ? "primary" : "ghost"}
-                            onClick={() => setFilter(item.value)}
-                        >
-                            {item.label}
-                        </Btn>
-                    ))}
-
+					{filterOptions.map((item) => (
+						<Btn
+							key={item.value}
+							size="sm"
+							variant={
+								filter === item.value ? "primary" : "ghost"
+							}
+							onClick={() => setFilter(item.value)}
+						>
+							{item.label}
+						</Btn>
+					))}
 				</div>
 				<div className="crm-table-container">
 					<table
