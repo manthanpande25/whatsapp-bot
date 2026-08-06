@@ -18,6 +18,7 @@ import { updateCustomer } from "../services/customer.service";
 export function CRM() {
 	const [contacts, setContacts] = useState<Customer[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [search, setSearch] = useState("");
 
 	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
 		null,
@@ -30,13 +31,9 @@ export function CRM() {
 	const [editNotes, setEditNotes] = useState("");
 	const totalContacts = contacts.length;
 
-const customers = contacts.filter(
-    c => c.status === "CUSTOMER"
-).length;
+	const customers = contacts.filter((c) => c.status === "CUSTOMER").length;
 
-const newLeads = contacts.filter(
-    c => c.status === "NEW"
-).length;
+	const newLeads = contacts.filter((c) => c.status === "NEW").length;
 
 	useEffect(() => {
 		loadCustomers();
@@ -73,6 +70,19 @@ const newLeads = contacts.filter(
 		CUSTOMER: T.jade,
 	};
 
+	const filteredContacts = contacts.filter((customer) => {
+		const query = search.toLowerCase().trim();
+
+		if (!query) return true;
+
+		return (
+			customer.name.toLowerCase().includes(query) ||
+			customer.phone.toLowerCase().includes(query) ||
+			customer.status.toLowerCase().includes(query) ||
+			customer.lastMessage.toLowerCase().includes(query)
+		);
+	});
+
 	function openCustomer(customer: Customer) {
 		setSelectedCustomer(customer);
 		setEditStatus(customer.status);
@@ -95,32 +105,33 @@ const newLeads = contacts.filter(
 			</div>
 		);
 	}
-async function saveCustomer() {
-	if (!selectedCustomer) return;
+	async function saveCustomer() {
+		if (!selectedCustomer) return;
 
-	try {
-		const token = localStorage.getItem("token");
+		try {
+			const token = localStorage.getItem("token");
 
-		if (!token) return;
+			if (!token) return;
 
-		await updateCustomer(
-			selectedCustomer.id,
-			{
-				status: editStatus,
-				notes: editNotes,
-				tags: selectedCustomer.tags,
-			},
-			token,
-		);
+			await updateCustomer(
+				selectedCustomer.id,
+				{
+					status: editStatus,
+					notes: editNotes,
+					tags: selectedCustomer.tags,
+				},
+				token,
+			);
 
-		await loadCustomers();
+			await loadCustomers();
 
-		setDrawerOpen(false);
-		setSelectedCustomer(null);
-	} catch (error) {
-		console.error("Failed to update customer:", error);
+			setDrawerOpen(false);
+			setSelectedCustomer(null);
+		} catch (error) {
+			console.error("Failed to update customer:", error);
+		}
 	}
-}	return (
+	return (
 		<div
 			style={{
 				padding: "clamp(16px, 4vw, 28px)",
@@ -156,6 +167,8 @@ async function saveCustomer() {
 				<div style={{ display: "flex", gap: 10 }}>
 					<div style={{ position: "relative" }}>
 						<input
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
 							placeholder="Search contacts..."
 							style={{
 								background: T.deep,
@@ -273,7 +286,22 @@ async function saveCustomer() {
 							</tr>
 						</thead>
 						<tbody>
-							{contacts.map((c) => (
+							{filteredContacts.length === 0 && (
+								<tr>
+									<td
+										colSpan={7}
+										style={{
+											padding: "40px",
+											textAlign: "center",
+											color: T.muted,
+											fontSize: 14,
+										}}
+									>
+										No customers found.
+									</td>
+								</tr>
+							)}
+							{filteredContacts.map((c) => (
 								<tr
 									onClick={() => openCustomer(c)}
 									key={c.id}
@@ -373,7 +401,6 @@ async function saveCustomer() {
 												size="sm"
 												onClick={(e) => {
 													e.stopPropagation();
-													
 												}}
 											>
 												<Icon
@@ -405,167 +432,162 @@ async function saveCustomer() {
 				</div>
 			</Card>
 
-
 			<Drawer
-    open={drawerOpen}
-    title="Customer Details"
-    onClose={() => setDrawerOpen(false)}
-    width={460}
-    footer={
-        <Btn
-            onClick={saveCustomer}
-            style={{
-                width: "100%",
-                justifyContent: "center",
-            }}
-        >
-            Save Changes
-        </Btn>
-    }
->
-    {selectedCustomer && (
-        <>
-            <DrawerSection label="Customer">
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                    }}
-                >
-                    <Avatar
-                        name={selectedCustomer.name}
-                        size={52}
-                    />
+				open={drawerOpen}
+				title="Customer Details"
+				onClose={() => setDrawerOpen(false)}
+				width={460}
+				footer={
+					<Btn
+						onClick={saveCustomer}
+						style={{
+							width: "100%",
+							justifyContent: "center",
+						}}
+					>
+						Save Changes
+					</Btn>
+				}
+			>
+				{selectedCustomer && (
+					<>
+						<DrawerSection label="Customer">
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: 12,
+								}}
+							>
+								<Avatar
+									name={selectedCustomer.name}
+									size={52}
+								/>
 
-                    <div>
-                        <div
-                            style={{
-                                color: T.white,
-                                fontWeight: 700,
-                            }}
-                        >
-                            {selectedCustomer.name}
-                        </div>
+								<div>
+									<div
+										style={{
+											color: T.white,
+											fontWeight: 700,
+										}}
+									>
+										{selectedCustomer.name}
+									</div>
 
-                        <div
-                            style={{
-                                color: T.muted,
-                                fontSize: 13,
-                            }}
-                        >
-                            {selectedCustomer.phone}
-                        </div>
-                    </div>
-                </div>
-            </DrawerSection>
+									<div
+										style={{
+											color: T.muted,
+											fontSize: 13,
+										}}
+									>
+										{selectedCustomer.phone}
+									</div>
+								</div>
+							</div>
+						</DrawerSection>
 
-            <DrawerSection label="Status">
-                <select
-                    value={editStatus}
-                    onChange={(e) =>
-                        setEditStatus(
-                            e.target.value as Customer["status"],
-                        )
-                    }
-                    style={drawerInput}
-                >
-                    <option>NEW</option>
-                    <option>CONTACTED</option>
-                    <option>QUALIFIED</option>
-                    <option>CUSTOMER</option>
-                </select>
-            </DrawerSection>
+						<DrawerSection label="Status">
+							<select
+								value={editStatus}
+								onChange={(e) =>
+									setEditStatus(
+										e.target.value as Customer["status"],
+									)
+								}
+								style={drawerInput}
+							>
+								<option>NEW</option>
+								<option>CONTACTED</option>
+								<option>QUALIFIED</option>
+								<option>CUSTOMER</option>
+							</select>
+						</DrawerSection>
 
-            <DrawerSection label="Notes">
-                <textarea
-                    rows={6}
-                    value={editNotes}
-                    onChange={(e) =>
-                        setEditNotes(e.target.value)
-                    }
-                    style={{
-                        ...drawerInput,
-                        resize: "vertical",
-                    }}
-                />
-            </DrawerSection>
+						<DrawerSection label="Notes">
+							<textarea
+								rows={6}
+								value={editNotes}
+								onChange={(e) => setEditNotes(e.target.value)}
+								style={{
+									...drawerInput,
+									resize: "vertical",
+								}}
+							/>
+						</DrawerSection>
 
-            <DrawerSection label="Tags">
-                <div
-                    style={{
-                        display: "flex",
-                        gap: 8,
-                        flexWrap: "wrap",
-                    }}
-                >
-                    {selectedCustomer.tags?.length ? (
-                        selectedCustomer.tags.map((tag) => (
-                            <Badge
-                                key={tag}
-                                color={T.jade}
-                                bg={T.jade + "22"}
-                            >
-                                {tag}
-                            </Badge>
-                        ))
-                    ) : (
-                        <span
-                            style={{
-                                color: T.muted,
-                            }}
-                        >
-                            No tags
-                        </span>
-                    )}
-                </div>
-            </DrawerSection>
+						<DrawerSection label="Tags">
+							<div
+								style={{
+									display: "flex",
+									gap: 8,
+									flexWrap: "wrap",
+								}}
+							>
+								{selectedCustomer.tags?.length ? (
+									selectedCustomer.tags.map((tag) => (
+										<Badge
+											key={tag}
+											color={T.jade}
+											bg={T.jade + "22"}
+										>
+											{tag}
+										</Badge>
+									))
+								) : (
+									<span
+										style={{
+											color: T.muted,
+										}}
+									>
+										No tags
+									</span>
+								)}
+							</div>
+						</DrawerSection>
 
-            <DrawerSection label="Last Message">
-                <Card>
-                    <div
-                        style={{
-                            color: T.cream,
-                            lineHeight: 1.6,
-                        }}
-                    >
-                        {selectedCustomer.lastMessage ||
-                            "No messages"}
-                    </div>
-                </Card>
-            </DrawerSection>
+						<DrawerSection label="Last Message">
+							<Card>
+								<div
+									style={{
+										color: T.cream,
+										lineHeight: 1.6,
+									}}
+								>
+									{selectedCustomer.lastMessage ||
+										"No messages"}
+								</div>
+							</Card>
+						</DrawerSection>
 
-            <DrawerSection label="Messages">
-                <div
-                    style={{
-                        fontSize: 26,
-                        fontWeight: 700,
-                        color: T.white,
-                    }}
-                >
-                    {selectedCustomer.totalMessages}
-                </div>
-            </DrawerSection>
+						<DrawerSection label="Messages">
+							<div
+								style={{
+									fontSize: 26,
+									fontWeight: 700,
+									color: T.white,
+								}}
+							>
+								{selectedCustomer.totalMessages}
+							</div>
+						</DrawerSection>
 
-            <DrawerSection label="Last Seen">
-                <div
-                    style={{
-                        color: T.muted,
-                    }}
-                >
-                    {selectedCustomer.lastSeen
-                        ? new Date(
-                              selectedCustomer.lastSeen
-                                  ._seconds * 1000,
-                          ).toLocaleString()
-                        : "Never"}
-                </div>
-            </DrawerSection>
-        </>
-    )}
-</Drawer>
+						<DrawerSection label="Last Seen">
+							<div
+								style={{
+									color: T.muted,
+								}}
+							>
+								{selectedCustomer.lastSeen
+									? new Date(
+											selectedCustomer.lastSeen._seconds *
+												1000,
+										).toLocaleString()
+									: "Never"}
+							</div>
+						</DrawerSection>
+					</>
+				)}
+			</Drawer>
 		</div>
-
-		
 	);
 }
