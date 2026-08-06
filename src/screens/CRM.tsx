@@ -19,6 +19,8 @@ export function CRM() {
 	const [contacts, setContacts] = useState<Customer[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState("");
+	const [editTags, setEditTags] = useState<string[]>([]);
+	const [newTag, setNewTag] = useState("");
 	const [filter, setFilter] = useState<
 		"ALL" | "NEW" | "CONTACTED" | "QUALIFIED" | "CUSTOMER"
 	>("ALL");
@@ -107,6 +109,7 @@ export function CRM() {
 		setEditNotes(customer.notes || "");
 		setDrawerOpen(true);
 		setEditName(customer.name);
+		setEditTags(customer.tags || []);
 	}
 	if (loading) {
 		return (
@@ -138,7 +141,7 @@ export function CRM() {
 					name: editName,
 					status: editStatus,
 					notes: editNotes,
-					tags: selectedCustomer.tags,
+					tags: editTags,
 				},
 				token,
 			);
@@ -181,7 +184,8 @@ export function CRM() {
 						CRM
 					</div>
 					<div style={{ fontSize: 13, color: T.muted }}>
-						{totalContacts} Contacts • {customers} Customers • {newLeads} New Leads
+						{totalContacts} Contacts • {customers} Customers •{" "}
+						{newLeads} New Leads
 					</div>
 				</div>
 				<div style={{ display: "flex", gap: 10 }}>
@@ -525,29 +529,96 @@ export function CRM() {
 							<div
 								style={{
 									display: "flex",
-									gap: 8,
 									flexWrap: "wrap",
+									gap: 8,
+									marginBottom: 14,
 								}}
 							>
-								{selectedCustomer.tags?.length ? (
-									selectedCustomer.tags.map((tag) => (
-										<Badge
+								{editTags.length ? (
+									editTags.map((tag) => (
+										<div
 											key={tag}
-											color={T.jade}
-											bg={T.jade + "22"}
+											style={{
+												display: "flex",
+												alignItems: "center",
+												gap: 6,
+												padding: "6px 10px",
+												background: T.jade + "22",
+												border: `1px solid ${T.jade}55`,
+												borderRadius: 999,
+												fontSize: 12,
+												color: T.jade,
+												fontWeight: 600,
+											}}
 										>
 											{tag}
-										</Badge>
+
+											<div
+												onClick={() =>
+													setEditTags((prev) =>
+														prev.filter(
+															(t) => t !== tag,
+														),
+													)
+												}
+												style={{
+													cursor: "pointer",
+													display: "flex",
+													alignItems: "center",
+												}}
+											>
+												<Icon
+													name="x"
+													size={12}
+													color={T.jade}
+												/>
+											</div>
+										</div>
 									))
 								) : (
 									<span
 										style={{
 											color: T.muted,
+											fontSize: 13,
 										}}
 									>
 										No tags
 									</span>
 								)}
+							</div>
+
+							<div
+								style={{
+									display: "flex",
+									gap: 10,
+								}}
+							>
+								<input
+									value={newTag}
+									onChange={(e) => setNewTag(e.target.value)}
+									placeholder="Add tag..."
+									style={{
+										...drawerInput,
+										flex: 1,
+									}}
+								/>
+
+								<Btn
+									size="sm"
+									onClick={() => {
+										const tag = newTag.trim();
+
+										if (!tag) return;
+
+										if (editTags.includes(tag)) return;
+
+										setEditTags((prev) => [...prev, tag]);
+
+										setNewTag("");
+									}}
+								>
+									Add
+								</Btn>
 							</div>
 						</DrawerSection>
 
