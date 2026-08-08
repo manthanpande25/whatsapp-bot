@@ -56,6 +56,22 @@ class ConversationService {
       updatedAt: FieldValue.serverTimestamp(),
     });
 }
+
+
+async getConversations(
+	organizationId: string,
+): Promise<IConversation[]> {
+	const snapshot = await db
+		.collection(COLLECTIONS.CONVERSATIONS)
+		.where("organizationId", "==", organizationId)
+		.orderBy("updatedAt", "desc")
+		.get();
+
+	return snapshot.docs.map((doc) => ({
+		id: doc.id,
+		...doc.data(),
+	})) as IConversation[];
+}
 }
 
 export default new ConversationService();

@@ -11,6 +11,8 @@ import chatRoutes from "./routes/chat.routes";
 import whatsappRoutes from "./routes/whatsapp.routes";
 import whatsappConnectionRoutes from "./routes/whatsapp-connection.routes";
 import customerRoutes from "./routes/customer.routes";
+import conversationRoutes from "./routes/conversation.routes";
+import messageRoutes from "./routes/message.routes";
 
 dotenv.config();
 console.log("META_VERIFY_TOKEN =", process.env.META_VERIFY_TOKEN);
@@ -30,7 +32,8 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
 app.use("/api/whatsapp", whatsappConnectionRoutes);
 app.use("/api/customers", customerRoutes);
-
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/messages", messageRoutes);
 
 // Health Check
 app.get("/", (req, res) => {

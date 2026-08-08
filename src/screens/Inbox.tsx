@@ -1,16 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar, Badge, Btn, Divider, Icon, Input } from "../components";
 import { T } from "../constants/theme";
-
-interface Conversation {
-	id: number;
-	name: string;
-	preview: string;
-	time: string;
-	unread: number;
-	tag: "Booking" | "FAQ" | "Support" | "Urgent";
-	avatar: string;
-}
+import {
+	getConversations,
+	type Conversation,
+} from "../services/conversation.service";
+import {
+	getMessages,
+	type Message as BackendMessage,
+} from "../services/message.service";
 
 interface Message {
 	role: "assistant" | "user";
@@ -18,70 +16,104 @@ interface Message {
 	time: string;
 }
 
-const CONVERSATIONS: Conversation[] = [
-	{
-		id: 1,
-		name: "Priya Meshram",
-		preview: "Is tomorrow 11 AM available?",
-		time: "2m",
-		unread: 2,
-		tag: "Booking",
-		avatar: "P",
-	},
-	{
-		id: 2,
-		name: "Rahul Deshmukh",
-		preview: "What are the batch timings?",
-		time: "8m",
-		unread: 0,
-		tag: "FAQ",
-		avatar: "R",
-	},
-	{
-		id: 3,
-		name: "Sunita Agrawal",
-		preview: "Can I reschedule my appointment?",
-		time: "22m",
-		unread: 1,
-		tag: "Support",
-		avatar: "S",
-	},
-	{
-		id: 4,
-		name: "Amit Joshi",
-		preview: "What's the fee for consultation?",
-		time: "1h",
-		unread: 0,
-		tag: "FAQ",
-		avatar: "A",
-	},
-	{
-		id: 5,
-		name: "Neha Sharma",
-		preview: "I need urgent help!",
-		time: "2h",
-		unread: 3,
-		tag: "Urgent",
-		avatar: "N",
-	},
-];
-
 export interface InboxProps {}
 
 export function Inbox() {
-	const [selected, setSelected] = useState<Conversation>(CONVERSATIONS[0]);
-	const [messages, setMessages] = useState<Message[]>([
-		{
-			role: "assistant",
-			text: "Hi Priya! Welcome to Dr. Sharma's Clinic 🙏 How can I help you today?",
-			time: "10:40 AM",
-		},
-		{
-			role: "user",
-			text: "Is tomorrow 11 AM available for consultation?",
-			time: "10:41 AM",
-		},
-	]);
+	const [conversations, setConversations] = useState<Conversation[]>([]);
+	const [selected, setSelected] = useState<Conversation | null>(null);
+	const [loadingConversations, setLoadingConversations] = useState(true);
+
+	const loadConversations = useCallback(async () => {
+		try {
+			const token = localStorage.getItem("token");
+			const organizationId = localStorage.getItem("organizationId");
+
+			if (!token || !organizationId) {
+				console.error("Token or Organization ID not found");
+				return;
+			}
+
+			const response = await getConversations(organizationId, token);
+
+			setConversations(response.data);
+
+			setSelected((current) => {
+				if (current) {
+					return (
+						response.data.find((c) => c.id === current.id) ||
+						response.data[0] ||
+						null
+					);
+				}
+
+				return response.data[0] || null;
+			});
+		} catch (error) {
+			console.error("Failed to load conversations:", error);
+		} finally {
+			setLoadingConversations(false);
+		}
+	}, []);
+	useEffect(() => {
+		loadConversations();
+
+		const interval = setInterval(loadConversations, 5000);
+
+		return () => clearInterval(interval);
+	}, [loadConversations]);
+	const [messages, setMessages] = useState<Message[]>([]);
+
+	useEffect(() => {
+	const loadMessages = async () => {
+		if (!selected?.id) {
+			setMessages([]);
+			return;
+		}
+
+		try {
+			const token = localStorage.getItem("token");
+
+			if (!token) {
+				console.error("Token not found");
+				return;
+			}
+
+			const response = await getMessages(
+				selected.id,
+				token,
+			);
+
+			const formattedMessages: Message[] = response.data.map(
+				(message: BackendMessage) => ({
+					role:
+						message.sender === "USER"
+							? "user"
+							: "assistant",
+					text: message.text,
+					time: message.createdAt
+						? new Date(
+								message.createdAt._seconds * 1000,
+							).toLocaleTimeString([], {
+								hour: "2-digit",
+								minute: "2-digit",
+							})
+						: "-",
+				}),
+			);
+
+			setMessages(formattedMessages);
+		} catch (error) {
+			console.error("Failed to load messages:", error);
+			setMessages([]);
+		}
+	};
+
+	loadMessages();
+}, [selected]);
+
+
+
+
 	const [input, setInput] = useState("");
 	const [mobileView, setMobileView] = useState<"list" | "chat" | "details">(
 		"list",
@@ -159,13 +191,7 @@ export function Inbox() {
 		setAiSuggestion(s);
 	};
 
-	const tagColors = {
-		Booking: T.jade,
-		FAQ: T.blue,
-		Support: T.amber,
-		Urgent: T.red,
-	};
-
+	
 	return (
 		<div
 			style={{
@@ -210,7 +236,7 @@ export function Inbox() {
 					))}
 				</div>
 				<div style={{ overflowY: "auto", flex: 1 }}>
-					{CONVERSATIONS.map((c) => (
+					{conversations.map((c) => (
 						<div
 							key={c.id}
 							onClick={() => {
@@ -221,7 +247,7 @@ export function Inbox() {
 								padding: "14px 16px",
 								cursor: "pointer",
 								background:
-									selected.id === c.id
+									selected?.id === c.id
 										? T.jadeDim
 										: "transparent",
 								borderBottom: `1px solid ${T.border}`,
@@ -235,7 +261,7 @@ export function Inbox() {
 									alignItems: "flex-start",
 								}}
 							>
-								<Avatar name={c.avatar} size={36} />
+								<Avatar name={c.customerPhone} size={36} />
 								<div style={{ flex: 1, minWidth: 0 }}>
 									<div
 										style={{
@@ -251,7 +277,7 @@ export function Inbox() {
 												color: T.cream,
 											}}
 										>
-											{c.name}
+											{c.customerPhone}
 										</span>
 										<span
 											style={{
@@ -259,7 +285,15 @@ export function Inbox() {
 												color: T.muted,
 											}}
 										>
-											{c.time}
+											{c.lastMessageAt
+												? new Date(
+														c.lastMessageAt
+															._seconds * 1000,
+													).toLocaleTimeString([], {
+														hour: "2-digit",
+														minute: "2-digit",
+													})
+												: "-"}
 										</span>
 									</div>
 									<div
@@ -271,7 +305,7 @@ export function Inbox() {
 											whiteSpace: "nowrap",
 										}}
 									>
-										{c.preview}
+										{c.lastMessage || "No messages yet"}
 									</div>
 									<div
 										style={{
@@ -282,15 +316,20 @@ export function Inbox() {
 										}}
 									>
 										<Badge
-											color={tagColors[c.tag] || T.muted}
+											color={
+												c.status === "OPEN"
+													? T.jade
+													: T.muted
+											}
 											bg={
-												(tagColors[c.tag] || T.muted) +
-												"22"
+												c.status === "OPEN"
+													? T.jadeDim
+													: T.muted + "22"
 											}
 										>
-											{c.tag}
+											{c.status}
 										</Badge>
-										{c.unread > 0 && (
+										{c.unreadCount > 0 && (
 											<span
 												style={{
 													background: T.jade,
@@ -305,7 +344,7 @@ export function Inbox() {
 													justifyContent: "center",
 												}}
 											>
-												{c.unread}
+												{c.unreadCount}
 											</span>
 										)}
 									</div>
@@ -358,7 +397,7 @@ export function Inbox() {
 							/>{" "}
 							Back
 						</Btn>
-						<Avatar name={selected.avatar} size={36} />
+						<Avatar name={selected?.customerPhone || ""} size={36} />
 						<div>
 							<div
 								style={{
@@ -367,7 +406,7 @@ export function Inbox() {
 									fontSize: 14,
 								}}
 							>
-								{selected.name}
+								{selected?.customerPhone || "Select a conversation"}
 							</div>
 							<div style={{ fontSize: 12, color: T.jade }}>
 								● Active now
@@ -644,7 +683,7 @@ export function Inbox() {
 					Back to Chat
 				</Btn>
 				<div style={{ textAlign: "center", marginBottom: 16 }}>
-					<Avatar name={selected.avatar} size={52} />
+					<Avatar name={selected?.customerPhone || ""} size={52} />
 					<div
 						style={{
 							fontWeight: 700,
@@ -653,7 +692,7 @@ export function Inbox() {
 							fontSize: 15,
 						}}
 					>
-						{selected.name}
+						{selected?.customerPhone || "Select a conversation"}
 					</div>
 					<div style={{ fontSize: 12, color: T.muted }}>
 						+91 98765 43210
@@ -661,7 +700,7 @@ export function Inbox() {
 				</div>
 				<Divider />
 				{[
-					{ l: "Tag", v: selected.tag },
+					{ l: "Status", v: selected?.status || "-" },
 					{ l: "First seen", v: "Today" },
 					{ l: "Total queries", v: "7" },
 					{ l: "Bookings", v: "2" },
