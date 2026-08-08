@@ -3,6 +3,8 @@ import axios from "axios";
 import aiService from "./ai.service";
 import chatService from "./chat.service";
 import whatsappConnectionService from "./whatsapp-connection.service";
+import conversationService from "./conversation.service";
+import messageService from "./message.service";
 
 class WhatsAppService {
 	async verifyWebhook(req: Request, res: Response) {
@@ -56,60 +58,127 @@ class WhatsAppService {
 		}
 	}
 
+	async sendHumanMessage(
+	organizationId: string,
+	to: string,
+	message: string,
+) {
+	try {
+		const connection =
+			await whatsappConnectionService.getByOrganizationId(
+				organizationId,
+			);
 
+		await this.sendMessage(
+			connection.accessToken,
+			connection.phoneNumberId,
+			to,
+			message,
+		);
+
+		return {
+			success: true,
+			message: "Message sent successfully",
+		};
+	} catch (error: any) {
+		console.error("Human Message Error:", error);
+
+		throw new Error(
+			error.message || "Failed to send human message",
+		);
+	}
+}
 	
 	async receiveWebhook(req: Request, res: Response) {
-		try {
-			console.log("📩 Incoming Webhook");
-			console.log(JSON.stringify(req.body, null, 2));
+	try {
+		console.log("📩 Incoming Webhook");
+		console.log(JSON.stringify(req.body, null, 2));
 
-			const message =
-				req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+		const message =
+			req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-			if (!message) {
-				return res.sendStatus(200);
-			}
+		if (!message) {
+			return res.sendStatus(200);
+		}
 
-			const from = message.from;
-			const text = message.text?.body ?? "";
-			const phoneNumberId =
-				req.body.entry?.[0]?.changes?.[0]?.value?.metadata
-					?.phone_number_id;
+		const from = message.from;
+		const text = message.text?.body ?? "";
 
-			console.log("📞 Phone Number ID:", phoneNumberId);
-			console.log("📱 From:", from);
-			console.log("💬 Message:", text);
+		const phoneNumberId =
+			req.body.entry?.[0]?.changes?.[0]?.value?.metadata
+				?.phone_number_id;
 
-			console.log("🤖 Calling Chat Service...");
+		console.log("📞 Phone Number ID:", phoneNumberId);
+		console.log("📱 From:", from);
+		console.log("💬 Message:", text);
 
-			const connection =
-				await whatsappConnectionService.getByPhoneNumberId(
-					phoneNumberId,
-				);
+		const connection =
+			await whatsappConnectionService.getByPhoneNumberId(
+				phoneNumberId,
+			);
 
-			const aiResponse = await chatService.sendMessage(
+		// Get existing conversation
+		const conversation =
+			await conversationService.getOrCreateConversation(
 				connection.organizationId,
 				from,
+			);
+
+		console.log("💬 Conversation Mode:", conversation.mode);
+
+		// ==========================================
+		// HUMAN MODE
+		// ==========================================
+
+		if (conversation.mode === "HUMAN") {
+			console.log("👤 HUMAN MODE - AI skipped");
+
+			await messageService.createMessage({
+				conversationId: conversation.id!,
+				sender: "CUSTOMER",
+				text,
+			});
+
+			await conversationService.updateConversation(
+				conversation.id!,
 				text,
 			);
 
-			console.log("🤖 AI Response:", aiResponse);
-
-			await this.sendMessage(
-				connection.accessToken,
-				connection.phoneNumberId,
-				from,
-				aiResponse.reply,
-			);
-
-			console.log("✅ Reply sent to WhatsApp");
+			console.log("✅ Customer message saved");
+			console.log("🚫 AI response skipped");
 
 			return res.sendStatus(200);
-		} catch (error) {
-			console.error("Webhook Error:", error);
-			return res.sendStatus(500);
 		}
+
+		// ==========================================
+		// AI MODE
+		// ==========================================
+
+		console.log("🤖 AI MODE - Calling Chat Service...");
+
+		const aiResponse = await chatService.sendMessage(
+			connection.organizationId,
+			from,
+			text,
+		);
+
+		console.log("🤖 AI Response:", aiResponse);
+
+		await this.sendMessage(
+			connection.accessToken,
+			connection.phoneNumberId,
+			from,
+			aiResponse.reply,
+		);
+
+		console.log("✅ AI Reply sent to WhatsApp");
+
+		return res.sendStatus(200);
+	} catch (error) {
+		console.error("Webhook Error:", error);
+		return res.sendStatus(500);
 	}
+}
 }
 
 export default new WhatsAppService();

@@ -46,7 +46,7 @@ class ChatService {
 			// Save current user message
 			await messageService.createMessage({
 				conversationId: conversation.id!,
-				sender: "USER",
+				sender: "CUSTOMER",
 				text: message,
 			});
 

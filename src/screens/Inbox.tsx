@@ -3,15 +3,17 @@ import { Avatar, Badge, Btn, Divider, Icon, Input } from "../components";
 import { T } from "../constants/theme";
 import {
 	getConversations,
+	updateConversationMode,
 	type Conversation,
 } from "../services/conversation.service";
 import {
 	getMessages,
+	sendHumanMessage,
 	type Message as BackendMessage,
 } from "../services/message.service";
 
 interface Message {
-	role: "assistant" | "user";
+	role: "assistant" | "customer" | "human";
 	text: string;
 	time: string;
 }
@@ -38,16 +40,32 @@ export function Inbox() {
 			setConversations(response.data);
 
 			setSelected((current) => {
-				if (current) {
-					return (
-						response.data.find((c) => c.id === current.id) ||
-						response.data[0] ||
-						null
-					);
-				}
+	if (!current) {
+		return response.data[0] || null;
+	}
 
-				return response.data[0] || null;
-			});
+	const updated = response.data.find(
+		(c) => c.id === current.id,
+	);
+
+	if (!updated) {
+		return response.data[0] || null;
+	}
+
+	// Don't trigger the messages effect
+	// if nothing important changed
+	if (
+		current.id === updated.id &&
+		current.mode === updated.mode &&
+		current.lastMessage === updated.lastMessage &&
+		current.lastMessageAt?._seconds ===
+			updated.lastMessageAt?._seconds
+	) {
+		return current;
+	}
+
+	return updated;
+});
 		} catch (error) {
 			console.error("Failed to load conversations:", error);
 		} finally {
@@ -57,62 +75,58 @@ export function Inbox() {
 	useEffect(() => {
 		loadConversations();
 
-		const interval = setInterval(loadConversations, 5000);
+		const interval = setInterval(loadConversations, 15000);
 
 		return () => clearInterval(interval);
 	}, [loadConversations]);
 	const [messages, setMessages] = useState<Message[]>([]);
 
 	useEffect(() => {
-	const loadMessages = async () => {
-		if (!selected?.id) {
-			setMessages([]);
-			return;
-		}
-
-		try {
-			const token = localStorage.getItem("token");
-
-			if (!token) {
-				console.error("Token not found");
+		const loadMessages = async () => {
+			if (!selected?.id) {
+				setMessages([]);
 				return;
 			}
 
-			const response = await getMessages(
-				selected.id,
-				token,
-			);
+			try {
+				const token = localStorage.getItem("token");
 
-			const formattedMessages: Message[] = response.data.map(
-				(message: BackendMessage) => ({
-					role:
-						message.sender === "USER"
-							? "user"
-							: "assistant",
-					text: message.text,
-					time: message.createdAt
-						? new Date(
-								message.createdAt._seconds * 1000,
-							).toLocaleTimeString([], {
-								hour: "2-digit",
-								minute: "2-digit",
-							})
-						: "-",
-				}),
-			);
+				if (!token) {
+					console.error("Token not found");
+					return;
+				}
 
-			setMessages(formattedMessages);
-		} catch (error) {
-			console.error("Failed to load messages:", error);
-			setMessages([]);
-		}
-	};
+				const response = await getMessages(selected.id, token);
 
-	loadMessages();
-}, [selected]);
+				const formattedMessages: Message[] = response.data.map(
+					(message: BackendMessage) => ({
+						role:
+							message.sender === "AI"
+								? "assistant"
+								: message.sender === "HUMAN"
+									? "human"
+									: "customer",
+						text: message.text,
+						time: message.createdAt
+							? new Date(
+									message.createdAt._seconds * 1000,
+								).toLocaleTimeString([], {
+									hour: "2-digit",
+									minute: "2-digit",
+								})
+							: "-",
+					}),
+				);
 
+				setMessages(formattedMessages);
+			} catch (error) {
+				console.error("Failed to load messages:", error);
+				setMessages([]);
+			}
+		};
 
-
+		loadMessages();
+	}, [selected]);
 
 	const [input, setInput] = useState("");
 	const [mobileView, setMobileView] = useState<"list" | "chat" | "details">(
@@ -120,6 +134,10 @@ export function Inbox() {
 	);
 	const [aiThinking, setAiThinking] = useState(false);
 	const [humanMode, setHumanMode] = useState(false);
+
+	useEffect(() => {
+		setHumanMode(selected?.mode === "HUMAN");
+	}, [selected]);
 	const [aiSuggestion, setAiSuggestion] = useState("");
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -152,36 +170,41 @@ export function Inbox() {
 	}, []);
 
 	const sendMessage = async () => {
-		if (!input.trim()) return;
-		const userMsg: Message = {
-			role: "user",
-			text: input,
-			time: new Date().toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit",
-			}),
-		};
-		setMessages((prev) => [...prev, userMsg]);
-		const sentText = input;
-		setInput("");
+		if (!input.trim() || !selected?.id) return;
 
-		if (!humanMode) {
+		const text = input.trim();
+
+		try {
 			setAiThinking(true);
-			const suggestion = await getAiSuggestion(sentText);
-			setAiThinking(false);
-			if (suggestion) {
-				setMessages((prev) => [
-					...prev,
-					{
-						role: "assistant",
-						text: suggestion,
-						time: new Date().toLocaleTimeString([], {
-							hour: "2-digit",
-							minute: "2-digit",
-						}),
-					},
-				]);
+
+			const token = localStorage.getItem("token");
+			const organizationId = localStorage.getItem("organizationId");
+
+			if (!token || !organizationId) {
+				console.error("Token or Organization ID not found");
+				return;
 			}
+
+			await sendHumanMessage(organizationId, selected.id, text, token);
+
+			// Immediately show the sent message
+			setMessages((prev) => [
+				...prev,
+				{
+					role: "human",
+					text,
+					time: new Date().toLocaleTimeString([], {
+						hour: "2-digit",
+						minute: "2-digit",
+					}),
+				},
+			]);
+
+			setInput("");
+		} catch (error) {
+			console.error("Failed to send message:", error);
+		} finally {
+			setAiThinking(false);
 		}
 	};
 
@@ -191,7 +214,49 @@ export function Inbox() {
 		setAiSuggestion(s);
 	};
 
-	
+	const toggleHumanMode = async () => {
+		if (!selected?.id) return;
+
+		const token = localStorage.getItem("token");
+
+		if (!token) {
+			console.error("Token not found");
+			return;
+		}
+
+		const newMode = humanMode ? "AI" : "HUMAN";
+
+		try {
+			await updateConversationMode(selected.id, newMode, token);
+
+			setHumanMode(newMode === "HUMAN");
+
+			// Keep selected conversation in sync
+			setSelected((prev) =>
+				prev
+					? {
+							...prev,
+							mode: newMode,
+						}
+					: prev,
+			);
+
+			// Also update the left conversation list
+			setConversations((prev) =>
+				prev.map((conversation) =>
+					conversation.id === selected.id
+						? {
+								...conversation,
+								mode: newMode,
+							}
+						: conversation,
+				),
+			);
+		} catch (error) {
+			console.error("Failed to change conversation mode:", error);
+		}
+	};
+
 	return (
 		<div
 			style={{
@@ -397,7 +462,10 @@ export function Inbox() {
 							/>{" "}
 							Back
 						</Btn>
-						<Avatar name={selected?.customerPhone || ""} size={36} />
+						<Avatar
+							name={selected?.customerPhone || ""}
+							size={36}
+						/>
 						<div>
 							<div
 								style={{
@@ -406,7 +474,8 @@ export function Inbox() {
 									fontSize: 14,
 								}}
 							>
-								{selected?.customerPhone || "Select a conversation"}
+								{selected?.customerPhone ||
+									"Select a conversation"}
 							</div>
 							<div style={{ fontSize: 12, color: T.jade }}>
 								● Active now
@@ -428,11 +497,14 @@ export function Inbox() {
 							{humanMode ? "👤 Human mode" : "🤖 AI mode"}
 						</Badge>
 						<Btn
+							onClick={toggleHumanMode}
 							variant="outline"
 							size="sm"
-							onClick={() => setHumanMode(!humanMode)}
-							className="hide-on-mobile"
 						>
+							<Icon
+								name={humanMode ? "bot" : "users"}
+								size={13}
+							/>
 							{humanMode ? "Hand back to AI" : "Take over"}
 						</Btn>
 						<Btn
@@ -465,7 +537,7 @@ export function Inbox() {
 							style={{
 								display: "flex",
 								justifyContent:
-									m.role === "user"
+									m.role === "customer"
 										? "flex-end"
 										: "flex-start",
 							}}
@@ -474,10 +546,19 @@ export function Inbox() {
 								style={{
 									maxWidth: "70%",
 									background:
-										m.role === "user" ? T.jadeDim : T.card,
-									border: `1px solid ${m.role === "user" ? T.jade + "44" : T.border}`,
+										m.role === "customer" ||
+										m.role === "human"
+											? T.jadeDim
+											: T.card,
+									border: `1px solid ${
+										m.role === "customer" ||
+										m.role === "human"
+											? T.jade + "44"
+											: T.border
+									}`,
 									borderRadius:
-										m.role === "user"
+										m.role === "customer" ||
+										m.role === "human"
 											? "14px 14px 4px 14px"
 											: "14px 14px 14px 4px",
 									padding: "10px 14px",

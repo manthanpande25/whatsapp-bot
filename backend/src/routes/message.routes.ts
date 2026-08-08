@@ -8,4 +8,9 @@ router.get(
 	messageController.getMessages,
 );
 
+router.post(
+	"/send",
+	messageController.sendHumanMessage,
+);
+
 export default router;

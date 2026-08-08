@@ -8,4 +8,9 @@ router.get(
 	conversationController.getConversations,
 );
 
+
+router.patch(
+	"/:conversationId/mode",
+	conversationController.updateMode,
+);
 export default router;

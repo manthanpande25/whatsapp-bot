@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+
 
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
@@ -14,7 +14,6 @@ import customerRoutes from "./routes/customer.routes";
 import conversationRoutes from "./routes/conversation.routes";
 import messageRoutes from "./routes/message.routes";
 
-dotenv.config();
 console.log("META_VERIFY_TOKEN =", process.env.META_VERIFY_TOKEN);
 
 const app = express();

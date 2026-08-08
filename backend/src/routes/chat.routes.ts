@@ -10,4 +10,10 @@ router.post(
   chatController.sendMessage
 );
 
+router.post(
+	"/inbox-message",
+	verifyToken,
+	chatController.sendInboxMessage,
+);
+
 export default router;

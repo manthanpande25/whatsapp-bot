@@ -33,6 +33,7 @@ class ConversationService {
       lastMessage: "",
       unreadCount: 0,
       status: "OPEN",
+      mode: "AI",
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };
@@ -57,6 +58,20 @@ class ConversationService {
     });
 }
 
+async updateConversationMode(
+	conversationId: string,
+	mode: "AI" | "HUMAN",
+) {
+	await db
+		.collection(COLLECTIONS.CONVERSATIONS)
+		.doc(conversationId)
+		.update({
+			mode,
+			updatedAt: FieldValue.serverTimestamp(),
+		});
+
+	return this.getConversationById(conversationId);
+}
 
 async getConversations(
 	organizationId: string,
@@ -71,6 +86,24 @@ async getConversations(
 		id: doc.id,
 		...doc.data(),
 	})) as IConversation[];
+}
+
+async getConversationById(
+	conversationId: string,
+): Promise<IConversation | null> {
+	const doc = await db
+		.collection(COLLECTIONS.CONVERSATIONS)
+		.doc(conversationId)
+		.get();
+
+	if (!doc.exists) {
+		return null;
+	}
+
+	return {
+		id: doc.id,
+		...doc.data(),
+	} as IConversation;
 }
 }
 

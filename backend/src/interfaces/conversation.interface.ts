@@ -1,18 +1,21 @@
 export interface IConversation {
-  id?: string;
+	id?: string;
 
-  organizationId: string;
+	organizationId: string;
 
-  customerPhone: string;
+	customerPhone: string;
 
-  lastMessage: string;
+	lastMessage: string;
 
-  lastMessageAt?: any;
+	lastMessageAt?: any;
 
-  unreadCount: number;
+	unreadCount: number;
 
-  status: "OPEN" | "CLOSED";
+	status: "OPEN" | "CLOSED";
 
-  createdAt?: any;
-  updatedAt?: any;
-}   
+	mode: "AI" | "HUMAN";
+
+	createdAt?: any;
+
+	updatedAt?: any;
+}

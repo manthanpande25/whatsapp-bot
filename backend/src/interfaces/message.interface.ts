@@ -3,7 +3,7 @@ export interface IMessage {
 
   conversationId: string;
 
-  sender: "USER" | "AI";
+  sender: "CUSTOMER" | "HUMAN" | "AI";
 
   text: string;
 
