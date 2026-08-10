@@ -11,6 +11,7 @@ import {
 	KnowledgeBase,
 	LandingPage,
 	Settings,
+	SignIn,
 } from "./screens";
 
 interface OutletContextType {
@@ -32,6 +33,7 @@ export default function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/" element={<LandingPage />} />
+				<Route path="/signin" element={<SignIn />} />
 				<Route element={<AppLayout />}>
 					<Route path="dashboard" element={<Dashboard />} />
 					<Route path="inbox" element={<Inbox />} />

@@ -106,7 +106,7 @@ export function LandingPage() {
 						))}
 					</div>
 					<div style={{ display: "flex", gap: 10 }}>
-						<Link to="/dashboard" style={{ textDecoration: "none" }}>
+						<Link to="/signin" style={{ textDecoration: "none" }}>
 							<Btn variant="outline" size="sm">
 								Sign in
 							</Btn>

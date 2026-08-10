@@ -8,3 +8,4 @@ export * from "./Billing";
 export * from "./KnowledgeBase";
 export * from "./Bookings";
 export * from "./Settings";
+export { default as SignIn } from "./SignIn";

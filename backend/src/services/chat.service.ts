@@ -4,6 +4,7 @@ import knowledgeService from "./knowledge.service";
 import conversationService from "./conversation.service";
 import messageService from "./message.service";
 import customerService from "./customer.service";
+import sseService from "./sse.service";
 
 import openRouterService from "./providers/openrouter.service";
 import { buildPrompt } from "../utils/promtBuilder";
@@ -50,6 +51,19 @@ class ChatService {
 				text: message,
 			});
 
+
+			sseService.sendToOrganization(
+	organizationId,
+	"new_message",
+	{
+		conversationId: conversation.id!,
+		sender: "CUSTOMER",
+		text: message,
+	},
+);
+
+console.log("📡 SSE: Customer message sent immediately");
+
 			const aiAgent = await aiService.getAIAgent(organizationId);
 
 			const knowledge =
@@ -65,6 +79,20 @@ class ChatService {
 				text: reply,
 			});
 
+
+
+			sseService.sendToOrganization(
+	organizationId,
+	"new_message",
+	{
+		conversationId: conversation.id!,
+		sender: "AI",
+		text: reply,
+	},
+);
+
+console.log("📡 SSE: AI message sent");
+
 			await conversationService.updateConversation(
 				conversation.id!,
 				reply,
@@ -73,6 +101,7 @@ class ChatService {
 			return {
 				success: true,
 				reply,
+				conversationId: conversation.id!,
 			};
 		} catch (error) {
 			throw error;

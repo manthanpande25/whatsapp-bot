@@ -25,6 +25,12 @@ export function Inbox() {
 	const [selected, setSelected] = useState<Conversation | null>(null);
 	const [loadingConversations, setLoadingConversations] = useState(true);
 
+	const selectedConversationRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		selectedConversationRef.current = selected?.id || null;
+	}, [selected]);
+
 	const loadConversations = useCallback(async () => {
 		try {
 			const token = localStorage.getItem("token");
@@ -40,45 +46,115 @@ export function Inbox() {
 			setConversations(response.data);
 
 			setSelected((current) => {
-	if (!current) {
-		return response.data[0] || null;
-	}
+				if (!current) {
+					return response.data[0] || null;
+				}
 
-	const updated = response.data.find(
-		(c) => c.id === current.id,
-	);
+				const updated = response.data.find((c) => c.id === current.id);
 
-	if (!updated) {
-		return response.data[0] || null;
-	}
+				if (!updated) {
+					return response.data[0] || null;
+				}
 
-	// Don't trigger the messages effect
-	// if nothing important changed
-	if (
-		current.id === updated.id &&
-		current.mode === updated.mode &&
-		current.lastMessage === updated.lastMessage &&
-		current.lastMessageAt?._seconds ===
-			updated.lastMessageAt?._seconds
-	) {
-		return current;
-	}
+				// Don't trigger the messages effect
+				// if nothing important changed
+				if (
+					current.id === updated.id &&
+					current.mode === updated.mode &&
+					current.lastMessage === updated.lastMessage &&
+					current.lastMessageAt?._seconds ===
+						updated.lastMessageAt?._seconds
+				) {
+					return current;
+				}
 
-	return updated;
-});
+				return updated;
+			});
 		} catch (error) {
 			console.error("Failed to load conversations:", error);
 		} finally {
 			setLoadingConversations(false);
 		}
 	}, []);
+
 	useEffect(() => {
 		loadConversations();
-
-		const interval = setInterval(loadConversations, 15000);
-
-		return () => clearInterval(interval);
 	}, [loadConversations]);
+
+	useEffect(() => {
+	console.log("🔵 SSE effect started");
+
+	const token = localStorage.getItem("token");
+
+	console.log("🔑 Token exists:", !!token);
+
+		if (!token) {
+			console.error("Token not found");
+			return;
+		}
+  
+		console.log("🟢 Creating SSE connection..."); 
+
+		const eventSource = new EventSource(
+			`http://localhost:5000/api/chat/events?token=${encodeURIComponent(token)}`,
+		);
+
+		eventSource.addEventListener("connected", () => {
+			console.log("📡 SSE connected");
+		});
+
+		eventSource.addEventListener("new_message", (event) => {
+			try {
+				const data = JSON.parse(event.data);
+
+				console.log("📩 SSE message:", data);
+
+				const newMessage: Message = {
+					role:
+						data.sender === "AI"
+							? "assistant"
+							: data.sender === "HUMAN"
+								? "human"
+								: "customer",
+					text: data.text,
+					time: new Date().toLocaleTimeString([], {
+						hour: "2-digit",
+						minute: "2-digit",
+					}),
+				};
+
+				if (selectedConversationRef.current === data.conversationId) {
+					setMessages((prev) => [...prev, newMessage]);
+				}
+				setConversations((prev) =>
+					prev.map((conversation) =>
+						conversation.id === data.conversationId
+							? {
+									...conversation,
+									lastMessage: data.text,
+									lastMessageAt: {
+										_seconds: Math.floor(Date.now() / 1000),
+										_nanoseconds: 0,
+									},
+								}
+							: conversation,
+					),
+				);
+			} catch (error) {
+				console.error("Failed to process SSE message:", error);
+			}
+		});
+
+		eventSource.onerror = (error) => {
+			console.error("SSE connection error:", error);
+		};
+
+		return () => {
+			console.log("🔌 Closing SSE connection");
+			eventSource.close();
+		};
+	}, []);
+
 	const [messages, setMessages] = useState<Message[]>([]);
 
 	useEffect(() => {

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import axios from "axios";
-import aiService from "./ai.service";
 import chatService from "./chat.service";
 import whatsappConnectionService from "./whatsapp-connection.service";
 import conversationService from "./conversation.service";
 import messageService from "./message.service";
+import sseService from "./sse.service";
 
 class WhatsAppService {
 	async verifyWebhook(req: Request, res: Response) {
@@ -59,126 +59,138 @@ class WhatsAppService {
 	}
 
 	async sendHumanMessage(
-	organizationId: string,
-	to: string,
-	message: string,
-) {
-	try {
-		const connection =
-			await whatsappConnectionService.getByOrganizationId(
-				organizationId,
+		organizationId: string,
+		to: string,
+		message: string,
+	) {
+		try {
+			const connection =
+				await whatsappConnectionService.getByOrganizationId(
+					organizationId,
+				);
+
+			await this.sendMessage(
+				connection.accessToken,
+				connection.phoneNumberId,
+				to,
+				message,
 			);
 
-		await this.sendMessage(
-			connection.accessToken,
-			connection.phoneNumberId,
-			to,
-			message,
-		);
+			return {
+				success: true,
+				message: "Message sent successfully",
+			};
+		} catch (error: any) {
+			console.error("Human Message Error:", error);
 
-		return {
-			success: true,
-			message: "Message sent successfully",
-		};
-	} catch (error: any) {
-		console.error("Human Message Error:", error);
-
-		throw new Error(
-			error.message || "Failed to send human message",
-		);
-	}
-}
-	
-	async receiveWebhook(req: Request, res: Response) {
-	try {
-		console.log("📩 Incoming Webhook");
-		console.log(JSON.stringify(req.body, null, 2));
-
-		const message =
-			req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-
-		if (!message) {
-			return res.sendStatus(200);
+			throw new Error(error.message || "Failed to send human message");
 		}
+	}
 
-		const from = message.from;
-		const text = message.text?.body ?? "";
+	async receiveWebhook(req: Request, res: Response) {
+		try {
+			console.log("📩 Incoming Webhook");
+			console.log(JSON.stringify(req.body, null, 2));
 
-		const phoneNumberId =
-			req.body.entry?.[0]?.changes?.[0]?.value?.metadata
-				?.phone_number_id;
+			const message =
+				req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-		console.log("📞 Phone Number ID:", phoneNumberId);
-		console.log("📱 From:", from);
-		console.log("💬 Message:", text);
+			if (!message) {
+				return res.sendStatus(200);
+			}
 
-		const connection =
-			await whatsappConnectionService.getByPhoneNumberId(
-				phoneNumberId,
-			);
+			const from = message.from;
+			const text = message.text?.body ?? "";
 
-		// Get existing conversation
-		const conversation =
-			await conversationService.getOrCreateConversation(
+			const phoneNumberId =
+				req.body.entry?.[0]?.changes?.[0]?.value?.metadata
+					?.phone_number_id;
+
+			console.log("📞 Phone Number ID:", phoneNumberId);
+			console.log("📱 From:", from);
+			console.log("💬 Message:", text);
+
+			const connection =
+				await whatsappConnectionService.getByPhoneNumberId(
+					phoneNumberId,
+				);
+
+			// Get existing conversation
+			const conversation =
+				await conversationService.getOrCreateConversation(
+					connection.organizationId,
+					from,
+				);
+
+			console.log("💬 Conversation Mode:", conversation.mode);
+
+			// ==========================================
+			// HUMAN MODE
+			// ==========================================
+
+			if (conversation.mode === "HUMAN") {
+				console.log("👤 HUMAN MODE - AI skipped");
+
+				await messageService.createMessage({
+					conversationId: conversation.id!,
+					sender: "CUSTOMER",
+					text,
+				});
+
+				await conversationService.updateConversation(
+					conversation.id!,
+					text,
+				);
+
+				sseService.sendToOrganization(
+					connection.organizationId,
+					"new_message",
+					{
+						conversationId: conversation.id!,
+						sender: "CUSTOMER",
+						text,
+					},
+				);
+
+				console.log("📡 SSE: Customer message sent to inbox");
+
+				console.log("✅ Customer message saved");
+				console.log("🚫 AI response skipped");
+
+				return res.sendStatus(200);
+			}
+
+			// ==========================================
+			// AI MODE
+			// ==========================================
+
+			console.log("🤖 AI MODE - Calling Chat Service...");
+
+			const aiResponse = await chatService.sendMessage(
 				connection.organizationId,
 				from,
-			);
-
-		console.log("💬 Conversation Mode:", conversation.mode);
-
-		// ==========================================
-		// HUMAN MODE
-		// ==========================================
-
-		if (conversation.mode === "HUMAN") {
-			console.log("👤 HUMAN MODE - AI skipped");
-
-			await messageService.createMessage({
-				conversationId: conversation.id!,
-				sender: "CUSTOMER",
-				text,
-			});
-
-			await conversationService.updateConversation(
-				conversation.id!,
 				text,
 			);
 
-			console.log("✅ Customer message saved");
-			console.log("🚫 AI response skipped");
+			console.log("🤖 AI Response:", aiResponse);
+
+			await this.sendMessage(
+				connection.accessToken,
+				connection.phoneNumberId,
+				from,
+				aiResponse.reply,
+			);
+
+	
+
+			console.log("✅ AI Reply sent to WhatsApp");
 
 			return res.sendStatus(200);
+		} catch (error) {
+			console.error("Webhook Error:", error);
+			return res.sendStatus(500);
 		}
-
-		// ==========================================
-		// AI MODE
-		// ==========================================
-
-		console.log("🤖 AI MODE - Calling Chat Service...");
-
-		const aiResponse = await chatService.sendMessage(
-			connection.organizationId,
-			from,
-			text,
-		);
-
-		console.log("🤖 AI Response:", aiResponse);
-
-		await this.sendMessage(
-			connection.accessToken,
-			connection.phoneNumberId,
-			from,
-			aiResponse.reply,
-		);
-
-		console.log("✅ AI Reply sent to WhatsApp");
-
-		return res.sendStatus(200);
-	} catch (error) {
-		console.error("Webhook Error:", error);
-		return res.sendStatus(500);
 	}
-}
 }
 
 export default new WhatsAppService();
