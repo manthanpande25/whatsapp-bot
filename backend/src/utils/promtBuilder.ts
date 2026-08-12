@@ -3,23 +3,23 @@ import { IKnowledge } from "../interfaces/knowledge.interface";
 import { IMessage } from "../interfaces/message.interface";
 
 export function buildPrompt(
-  aiAgent: IAIAgent,
-  knowledge: IKnowledge[],
-  history: IMessage[],
-  userMessage: string
+	aiAgent: IAIAgent,
+	knowledge: IKnowledge[],
+	history: IMessage[],
+	userMessage: string,
 ): string {
-  const knowledgeText = knowledge
-    .map((item) => `- ${item.question}\n${item.answer}`)
-    .join("\n\n");
+	const knowledgeText = knowledge
+		.map((item) => `- ${item.question}\n${item.answer}`)
+		.join("\n\n");
 
-  const conversationHistory = history
-    .map((msg) => {
-      const role = msg.sender === "USER" ? "Customer" : "Assistant";
-      return `${role}: ${msg.text}`;
-    })
-    .join("\n");
+	const conversationHistory = history
+		.map((msg) => {
+			const role = msg.sender === "CUSTOMER" ? "Customer" : "Assistant";
+			return `${role}: ${msg.text}`;
+		})
+		.join("\n");
 
-  return `
+	return `
 ${aiAgent.systemPrompt}
 
 Business Knowledge:

@@ -1,8 +1,9 @@
 export interface IKnowledge {
-  question: string;
-  answer: string;
-  category: string;
+	id?: string;
+	question: string;
+	answer: string;
+	category: string;
 
-  createdAt?: any;
-  updatedAt?: any;
+	createdAt?: any;
+	updatedAt?: any;
 }
