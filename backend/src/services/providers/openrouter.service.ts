@@ -6,7 +6,7 @@ class OpenRouterService {
       const response = await axios.post(
         "https://openrouter.ai/api/v1/chat/completions",
         {
-          model: "openai/gpt-oss-20b:free",
+          model: "openai/gpt-oss-20b",
           messages: [
             {
               role: "user",

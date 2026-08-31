@@ -7,6 +7,9 @@ import messageService from "./message.service";
 import sseService from "./sse.service";
 
 class WhatsAppService {
+
+	private processedMessages = new Set<string>();
+
 	async verifyWebhook(req: Request, res: Response) {
 		console.log("========== VERIFY ==========");
 		console.log(req.query);
@@ -93,11 +96,24 @@ class WhatsAppService {
 			console.log(JSON.stringify(req.body, null, 2));
 
 			const message =
-				req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-			if (!message) {
-				return res.sendStatus(200);
-			}
+		if (!message) {
+			return res.sendStatus(200);
+		}
+
+		const messageId = message.id;
+
+		// Ignore duplicate WhatsApp webhook
+		if (this.processedMessages.has(messageId)) {
+			console.log("⚠️ Duplicate message ignored:", messageId);
+			return res.sendStatus(200);
+		}
+
+		this.processedMessages.add(messageId);
+
+		// Tell Meta immediately
+		res.sendStatus(200);
 
 			const from = message.from;
 			const text = message.text?.body ?? "";
@@ -157,7 +173,7 @@ class WhatsAppService {
 				console.log("✅ Customer message saved");
 				console.log("🚫 AI response skipped");
 
-				return res.sendStatus(200);
+				return;
 			}
 
 			// ==========================================
@@ -184,8 +200,7 @@ class WhatsAppService {
 	
 
 			console.log("✅ AI Reply sent to WhatsApp");
-
-			return res.sendStatus(200);
+return;
 		} catch (error) {
 			console.error("Webhook Error:", error);
 			return res.sendStatus(500);
