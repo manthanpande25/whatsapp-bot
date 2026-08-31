@@ -74,18 +74,21 @@ class CustomerService {
       });
   }
 
-  async getCustomers(organizationId: string) {
-    const snapshot = await db
-      .collection(COLLECTIONS.CUSTOMERS)
-      .where("organizationId", "==", organizationId)
-      .orderBy("updatedAt", "desc")
-      .get();
+  
+async getCustomers(
+	organizationId: string
+): Promise<ICustomer[]> {
+	const snapshot = await db
+		.collection(COLLECTIONS.CUSTOMERS)
+		.where("organizationId", "==", organizationId)
+		.orderBy("updatedAt", "desc")
+		.get();
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  }
+	return snapshot.docs.map((doc) => ({
+		id: doc.id,
+		...doc.data(),
+	})) as ICustomer[];
+}
 
   async getCustomerById(customerId: string) {
     const customerDoc = await db

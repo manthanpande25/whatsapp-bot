@@ -45,6 +45,37 @@ class CustomerController {
     }
   }
 
+
+
+  async getCustomerByPhone(req: Request, res: Response) {
+  try {
+    const organizationId = req.params.organizationId as string;
+    const phone = req.params.phone as string;
+
+    const customer = await customerService.findByPhone(
+      organizationId,
+      phone
+    );
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: customer,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
   async updateCustomer(req: Request, res: Response) {
     try {
       const customerId = req.params.customerId as string;

@@ -4,6 +4,7 @@ export interface Conversation {
 	id: string;
 	organizationId: string;
 	customerPhone: string;
+	customerName?: string;
 	lastMessage: string | null;
 	lastMessageAt?: {
 		_seconds: number;

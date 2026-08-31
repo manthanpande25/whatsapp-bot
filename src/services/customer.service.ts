@@ -24,6 +24,32 @@ export async function getCustomers(
 	return data;
 }
 
+
+export async function getCustomerByPhone(
+	organizationId: string,
+	phone: string,
+	token: string,
+) {
+	const response = await fetch(
+		`${API_URL}/customers/${organizationId}/phone/${phone}`,
+		{
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		},
+	);
+
+	const data = await response.json();
+
+	if (!response.ok) {
+		throw new Error(data.message || "Failed to fetch customer");
+	}
+
+	return data;
+}
+
 export async function updateCustomer(
 	customerId: string,
 	data: {

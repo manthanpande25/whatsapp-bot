@@ -5,6 +5,8 @@ export interface IConversation {
 
 	customerPhone: string;
 
+	customerName?: string;
+
 	lastMessage: string;
 
 	lastMessageAt?: any;

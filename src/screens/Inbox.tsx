@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar, Badge, Btn, Divider, Icon, Input } from "../components";
+import {
+	getCustomerByPhone,
+	updateCustomer,
+} from "../services/customer.service";
 import { T } from "../constants/theme";
 import {
 	getConversations,
@@ -82,18 +86,18 @@ export function Inbox() {
 	}, [loadConversations]);
 
 	useEffect(() => {
-	console.log("🔵 SSE effect started");
+		console.log("🔵 SSE effect started");
 
-	const token = localStorage.getItem("token");
+		const token = localStorage.getItem("token");
 
-	console.log("🔑 Token exists:", !!token);
+		console.log("🔑 Token exists:", !!token);
 
 		if (!token) {
 			console.error("Token not found");
 			return;
 		}
-  
-		console.log("🟢 Creating SSE connection..."); 
+
+		console.log("🟢 Creating SSE connection...");
 
 		const eventSource = new EventSource(
 			`http://localhost:5000/api/chat/events?token=${encodeURIComponent(token)}`,
@@ -210,12 +214,50 @@ export function Inbox() {
 	);
 	const [aiThinking, setAiThinking] = useState(false);
 	const [humanMode, setHumanMode] = useState(false);
-
+	const [customerId, setCustomerId] = useState("");
+	const [customerName, setCustomerName] = useState("");
+	const [customerStatus, setCustomerStatus] = useState<
+		"NEW" | "CONTACTED" | "QUALIFIED" | "CUSTOMER"
+	>("NEW");
+	const [customerNotes, setCustomerNotes] = useState("");
+	const [customerTags, setCustomerTags] = useState<string[]>([]);
+	const [newTag, setNewTag] = useState("");
 	useEffect(() => {
 		setHumanMode(selected?.mode === "HUMAN");
 	}, [selected]);
 	const [aiSuggestion, setAiSuggestion] = useState("");
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const loadCustomer = async () => {
+			if (!selected?.customerPhone) return;
+
+			const token = localStorage.getItem("token");
+			const organizationId = localStorage.getItem("organizationId");
+
+			if (!token || !organizationId) return;
+
+			try {
+				const result = await getCustomerByPhone(
+					organizationId,
+					selected.customerPhone,
+					token,
+				);
+
+				const customer = result.data;
+
+				setCustomerId(customer.id);
+				setCustomerName(customer.name || "");
+				setCustomerStatus(customer.status || "NEW");
+				setCustomerNotes(customer.notes || "");
+				setCustomerTags(customer.tags || []);
+			} catch (error) {
+				console.error("❌ Failed to load customer:", error);
+			}
+		};
+
+		loadCustomer();
+	}, [selected]);
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -333,6 +375,34 @@ export function Inbox() {
 		}
 	};
 
+	const saveCustomer = async () => {
+		if (!customerId) return;
+
+		const token = localStorage.getItem("token");
+
+		if (!token) {
+			console.error("Token not found");
+			return;
+		}
+
+		try {
+			await updateCustomer(
+				customerId,
+				{
+					name: customerName,
+					status: customerStatus,
+					notes: customerNotes,
+					tags: customerTags,
+				},
+				token,
+			);
+
+			console.log("✅ Customer updated");
+		} catch (error) {
+			console.error("❌ Failed to update customer:", error);
+		}
+	};
+
 	return (
 		<div
 			style={{
@@ -402,7 +472,10 @@ export function Inbox() {
 									alignItems: "flex-start",
 								}}
 							>
-								<Avatar name={c.customerPhone} size={36} />
+								<Avatar
+									name={c.customerName || c.customerPhone}
+									size={36}
+								/>
 								<div style={{ flex: 1, minWidth: 0 }}>
 									<div
 										style={{
@@ -418,7 +491,7 @@ export function Inbox() {
 												color: T.cream,
 											}}
 										>
-											{c.customerPhone}
+											{c.customerName || c.customerPhone}
 										</span>
 										<span
 											style={{
@@ -539,7 +612,11 @@ export function Inbox() {
 							Back
 						</Btn>
 						<Avatar
-							name={selected?.customerPhone || ""}
+							name={
+								selected?.customerName ||
+								selected?.customerPhone ||
+								""
+							}
 							size={36}
 						/>
 						<div>
@@ -550,7 +627,8 @@ export function Inbox() {
 									fontSize: 14,
 								}}
 							>
-								{selected?.customerPhone ||
+								{selected?.customerName ||
+									selected?.customerPhone ||
 									"Select a conversation"}
 							</div>
 							<div style={{ fontSize: 12, color: T.jade }}>
@@ -840,19 +918,33 @@ export function Inbox() {
 					Back to Chat
 				</Btn>
 				<div style={{ textAlign: "center", marginBottom: 16 }}>
-					<Avatar name={selected?.customerPhone || ""} size={52} />
-					<div
+					<Avatar
+						name={customerName || selected?.customerPhone || ""}
+						size={52}
+					/>
+
+					<input
+						value={customerName}
+						onChange={(e) => setCustomerName(e.target.value)}
+						placeholder="Customer name"
 						style={{
-							fontWeight: 700,
+							width: "100%",
+							background: T.deep,
+							border: `1px solid ${T.border}`,
+							borderRadius: 8,
+							padding: "10px",
 							color: T.cream,
+							fontSize: 14,
+							fontWeight: 600,
+							textAlign: "center",
+							outline: "none",
+							boxSizing: "border-box",
 							marginTop: 10,
-							fontSize: 15,
 						}}
-					>
-						{selected?.customerPhone || "Select a conversation"}
-					</div>
-					<div style={{ fontSize: 12, color: T.muted }}>
-						+91 98765 43210
+					/>
+
+					<div style={{ fontSize: 12, color: T.muted, marginTop: 6 }}>
+						{selected?.customerPhone || "-"}
 					</div>
 				</div>
 				<Divider />
