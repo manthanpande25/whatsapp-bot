@@ -235,7 +235,7 @@ export function Sidebar({
 						gap: 10,
 					}}
 				>
-					<Avatar name="Y" size={32} />
+					<Avatar name="M" size={32} />
 					{!collapsed && (
 						<div style={{ flex: 1, minWidth: 0 }}>
 							<div
@@ -248,10 +248,10 @@ export function Sidebar({
 									whiteSpace: "nowrap",
 								}}
 							>
-								Yasir Sheikh
+								Manthan Pande
 							</div>
 							<div style={{ fontSize: 11, color: T.muted }}>
-								Founder · Growth Plan
+								Admin
 							</div>
 						</div>
 					)}

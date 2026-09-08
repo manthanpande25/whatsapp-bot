@@ -13,6 +13,7 @@ import whatsappConnectionRoutes from "./routes/whatsapp-connection.routes";
 import customerRoutes from "./routes/customer.routes";
 import conversationRoutes from "./routes/conversation.routes";
 import messageRoutes from "./routes/message.routes";
+import bookingRoutes from "./routes/booking.routes";
 
 console.log("META_VERIFY_TOKEN =", process.env.META_VERIFY_TOKEN);
 
@@ -24,6 +25,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/bookings", bookingRoutes);
 app.use("/api/organization", organizationRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/knowledge", knowledgeRoutes);
@@ -33,6 +35,7 @@ app.use("/api/whatsapp", whatsappConnectionRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/messages", messageRoutes);
+
 
 // Health Check
 app.get("/", (req, res) => {
