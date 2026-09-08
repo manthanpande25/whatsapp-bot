@@ -154,3 +154,65 @@ export async function cancelBooking(
 
   return data;
 }
+
+
+export async function rescheduleBooking(
+  bookingId: string,
+  data: {
+    date: string;
+    time: string;
+  },
+  token: string
+) {
+  const response = await fetch(
+    `${API_URL}/bookings/${bookingId}/reschedule`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message ||
+        "Failed to reschedule booking"
+    );
+  }
+
+  return result;
+}
+
+
+export async function sendBookingReminder(
+  booking: Booking,
+  token: string
+) {
+  const response = await fetch(
+    `${API_URL}/bookings/${booking.id}/reminder`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(booking),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message ||
+        "Failed to send booking reminder"
+    );
+  }
+
+  return result;
+}

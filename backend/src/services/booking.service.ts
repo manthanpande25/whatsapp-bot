@@ -28,10 +28,16 @@ const SLOTS = [
 ];
 
 class BookingService {
+
+  // --------------------------------------------------
+  // GET AVAILABLE SLOTS
+  // --------------------------------------------------
+
   async getAvailableSlots(
     organizationId: string,
     date: string
   ): Promise<string[]> {
+
     const snapshot = await db
       .collection(COLLECTION)
       .where("organizationId", "==", organizationId)
@@ -43,32 +49,58 @@ class BookingService {
       snapshot.docs.map((doc) => doc.data().time)
     );
 
-    return SLOTS.filter((slot) => !bookedSlots.has(slot));
+    return SLOTS.filter(
+      (slot) => !bookedSlots.has(slot)
+    );
   }
 
+
+  // --------------------------------------------------
+  // CREATE BOOKING
+  // --------------------------------------------------
+
   async createBooking(
-    data: Omit<IBooking, "id" | "createdAt" | "updatedAt">
+    data: Omit<
+      IBooking,
+      "id" | "createdAt" | "updatedAt"
+    >
   ): Promise<IBooking> {
-    const bookingRef = db.collection(COLLECTION).doc();
+
+    // Check whether slot is already booked
 
     const existing = await db
       .collection(COLLECTION)
-      .where("organizationId", "==", data.organizationId)
+      .where(
+        "organizationId",
+        "==",
+        data.organizationId
+      )
       .where("date", "==", data.date)
       .where("time", "==", data.time)
-      .where("status", "in", ["PENDING", "CONFIRMED"])
+      .where(
+        "status",
+        "in",
+        ["PENDING", "CONFIRMED"]
+      )
       .limit(1)
       .get();
 
     if (!existing.empty) {
-      throw new Error("This appointment slot is already booked");
+      throw new Error(
+        "This appointment slot is already booked"
+      );
     }
+
+    const bookingRef =
+      db.collection(COLLECTION).doc();
 
     await bookingRef.set({
       id: bookingRef.id,
       ...data,
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
+      createdAt:
+        FieldValue.serverTimestamp(),
+      updatedAt:
+        FieldValue.serverTimestamp(),
     });
 
     return {
@@ -77,12 +109,22 @@ class BookingService {
     };
   }
 
+
+  // --------------------------------------------------
+  // GET ALL BOOKINGS
+  // --------------------------------------------------
+
   async getBookings(
     organizationId: string
   ): Promise<IBooking[]> {
+
     const snapshot = await db
       .collection(COLLECTION)
-      .where("organizationId", "==", organizationId)
+      .where(
+        "organizationId",
+        "==",
+        organizationId
+      )
       .orderBy("date", "asc")
       .get();
 
@@ -91,16 +133,58 @@ class BookingService {
       ...doc.data(),
     })) as IBooking[];
   }
+
+
+  // --------------------------------------------------
+  // GET SINGLE BOOKING
+  // --------------------------------------------------
+
+  async getBookingById(
+    bookingId: string
+  ): Promise<IBooking | null> {
+
+    const doc = await db
+      .collection(COLLECTION)
+      .doc(bookingId)
+      .get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    return {
+      id: doc.id,
+      ...doc.data(),
+    } as IBooking;
+  }
+
+
+  // --------------------------------------------------
+  // GET CUSTOMER BOOKINGS
+  // --------------------------------------------------
 
   async getCustomerBookings(
     organizationId: string,
     customerPhone: string
   ): Promise<IBooking[]> {
+
     const snapshot = await db
       .collection(COLLECTION)
-      .where("organizationId", "==", organizationId)
-      .where("customerPhone", "==", customerPhone)
-      .where("status", "in", ["PENDING", "CONFIRMED"])
+      .where(
+        "organizationId",
+        "==",
+        organizationId
+      )
+      .where(
+        "customerPhone",
+        "==",
+        customerPhone
+      )
+      .where(
+        "status",
+        "in",
+        ["PENDING", "CONFIRMED"]
+      )
       .orderBy("date", "asc")
       .get();
 
@@ -110,18 +194,134 @@ class BookingService {
     })) as IBooking[];
   }
 
-  async cancelBooking(bookingId: string) {
-    await db
-      .collection(COLLECTION)
-      .doc(bookingId)
-      .update({
-        status: "CANCELLED",
-        updatedAt: FieldValue.serverTimestamp(),
-      });
+
+  // --------------------------------------------------
+  // CANCEL BOOKING
+  // --------------------------------------------------
+
+  async cancelBooking(
+    bookingId: string
+  ) {
+
+    const bookingRef =
+      db.collection(COLLECTION).doc(bookingId);
+
+    const booking =
+      await bookingRef.get();
+
+    if (!booking.exists) {
+      throw new Error(
+        "Booking not found"
+      );
+    }
+
+    await bookingRef.update({
+      status: "CANCELLED",
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
 
     return {
       success: true,
-      message: "Booking cancelled successfully",
+      message:
+        "Booking cancelled successfully",
+    };
+  }
+
+
+  // --------------------------------------------------
+  // RESCHEDULE BOOKING
+  // --------------------------------------------------
+
+  async rescheduleBooking(
+    bookingId: string,
+    newDate: string,
+    newTime: string
+  ): Promise<IBooking> {
+
+    const bookingRef =
+      db.collection(COLLECTION).doc(bookingId);
+
+    const bookingSnapshot =
+      await bookingRef.get();
+
+    if (!bookingSnapshot.exists) {
+      throw new Error(
+        "Booking not found"
+      );
+    }
+
+    const currentBooking =
+      bookingSnapshot.data() as IBooking;
+
+    // Don't allow rescheduling cancelled booking
+
+    if (
+      currentBooking.status ===
+      "CANCELLED"
+    ) {
+      throw new Error(
+        "Cancelled booking cannot be rescheduled"
+      );
+    }
+
+
+    // Check new slot
+
+    const existing =
+      await db
+        .collection(COLLECTION)
+        .where(
+          "organizationId",
+          "==",
+          currentBooking.organizationId
+        )
+        .where(
+          "date",
+          "==",
+          newDate
+        )
+        .where(
+          "time",
+          "==",
+          newTime
+        )
+        .where(
+          "status",
+          "in",
+          ["PENDING", "CONFIRMED"]
+        )
+        .limit(1)
+        .get();
+
+
+    // If the existing booking is the same booking,
+    // allow it.
+
+    const conflict = existing.docs.some(
+      (doc) => doc.id !== bookingId
+    );
+
+    if (conflict) {
+      throw new Error(
+        "This appointment slot is already booked"
+      );
+    }
+
+
+    await bookingRef.update({
+      date: newDate,
+      time: newTime,
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
+
+
+    return {
+      ...currentBooking,
+      id: bookingId,
+      date: newDate,
+      time: newTime,
     };
   }
 }

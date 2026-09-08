@@ -4,12 +4,7 @@ import { T } from "../constants/theme";
 export function Dashboard() {
 	const chartData = [12, 19, 15, 28, 22, 35, 42, 38, 45, 52, 48, 61];
 	const activities = [
-		{
-			name: "Priya Meshram",
-			action: "Booked appointment",
-			time: "2 min ago",
-			avatar: "P",
-		},
+		
 		{
 			name: "Rahul Deshmukh",
 			action: "New lead captured",
